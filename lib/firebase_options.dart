@@ -73,4 +73,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'spendwise-a8baa.firebasestorage.app',
     measurementId: 'G-8M3RLHRB6H',
   );
+
 }

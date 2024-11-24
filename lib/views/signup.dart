@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spend_wise/controllers/user_controller.dart';
 
-class LoginScreen extends StatelessWidget {
-  LoginScreen({super.key});
+class SignupScreen extends StatelessWidget {
+  SignupScreen({super.key});
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   final UserController userController = UserController();
 
@@ -40,11 +42,24 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+            TextField(
+              controller: confirmPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                hintText: 'Confirm password',
+                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 0.3),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             GestureDetector(
               onTap: () {
-                userController.loginUser(
+                userController.signupUser(
                   email: emailController.text,
                   password: passwordController.text,
+                  confirmPassword: confirmPasswordController.text,
                   context: context,
                 );
               },
@@ -58,7 +73,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: const Center(
                   child: Text(
-                    "Login",
+                    "Register",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 17,
@@ -69,8 +84,8 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () => context.go('/signup'),
-              child: const Text('Sign up'),
+              onPressed: () => context.go('/login'),
+              child: const Text('Login'),
             )
           ],
         ),

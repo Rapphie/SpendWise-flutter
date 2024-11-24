@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:spend_wise/routes/app_routes.dart';
+import 'package:spend_wise/widgets/components/snackbar.dart';
 
 import 'firebase_options.dart';
 
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
+      scaffoldMessengerKey: Snackbar.scaffoldMessengerKey,
       routerConfig: router,
     );
   }

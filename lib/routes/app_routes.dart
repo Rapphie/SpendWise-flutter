@@ -2,6 +2,7 @@ import 'package:spend_wise/controllers/auth_controller.dart';
 import 'package:spend_wise/views/home.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spend_wise/views/login.dart';
+import 'package:spend_wise/views/signup.dart';
 
 /// The route configuration.
 final GoRouter router = GoRouter(
@@ -9,7 +10,7 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => HomeScreen(),
     ),
     GoRoute(
       path: '/auth',
@@ -17,7 +18,11 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => LoginScreen(),
+    ),
+    GoRoute(
+      path: '/signup',
+      builder: (context, state) => SignupScreen(),
     ),
   ],
 );
