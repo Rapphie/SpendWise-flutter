@@ -6,25 +6,20 @@ import 'package:spend_wise/widgets/components/snackbar.dart';
 import 'package:spend_wise/constants/app_strings.dart';
 
 class UserController {
-  final Snackbar snackbar = Snackbar();
-
   void loginUser({
     required String email,
     required String password,
     required BuildContext context,
   }) async {
-    LoadingIndicatorDialog().show(context);
+    LoadingIndicatorDialog().show(context); // a throbber
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-
-      LoadingIndicatorDialog().dismiss();
-      final user = FirebaseAuth.instance.currentUser!;
-      Snackbar.showSnackBar("Successfully signed in as ${user.email}",
-          duration: 5);
+      LoadingIndicatorDialog()
+          .dismiss(); // dismiss the throbber after successful login
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'user-not-found':
@@ -33,18 +28,21 @@ class UserController {
         case 'invalid-credential':
           snackbarMessage = 'Incorrect email or password.';
           break;
+        case 'invalid-email':
+          snackbarMessage = 'Please enter a valid email.';
+          break;
         case 'channel-error':
           snackbarMessage = 'Please don\'t leave the fields blank.';
           break;
         default:
           snackbarMessage = 'An error occurred. Please try again.';
       }
+      //LoadingIndicatorDialog is an async class need to use Future to resolve it.
       Future.delayed(const Duration(seconds: 1), () {
         LoadingIndicatorDialog().dismiss();
         Snackbar.showSnackBar(snackbarMessage);
       });
     }
-    LoadingIndicatorDialog().dismiss();
   }
 
   void signupUser({
@@ -57,7 +55,12 @@ class UserController {
 
     if (password != confirmPassword) {
       snackbarMessage = 'Passwords don\'t match. Please try again.';
-      Snackbar.showSnackBar(snackbarMessage);
+
+      //LoadingIndicatorDialog is an async class need to use Future to resolve it.
+      Future.delayed(const Duration(seconds: 1), () {
+        LoadingIndicatorDialog().dismiss();
+        Snackbar.showSnackBar(snackbarMessage);
+      });
     } else {
       try {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -76,7 +79,7 @@ class UserController {
             snackbarMessage = 'Minimum password length is 6.';
             break;
           case 'invalid-email':
-            snackbarMessage = 'The email format is invalid.';
+            snackbarMessage = 'Please enter a valid email.';
             break;
           case 'channel-error':
             snackbarMessage = 'Please don\'t leave the fields blank.';
@@ -86,7 +89,7 @@ class UserController {
         }
         Future.delayed(const Duration(seconds: 1), () {
           LoadingIndicatorDialog().dismiss();
-          Snackbar.showSnackBar(snackbarMessage, duration: 5);
+          Snackbar.showSnackBar(snackbarMessage);
         });
       }
     }
@@ -94,7 +97,7 @@ class UserController {
 
   void logoutUser() async {
     await FirebaseAuth.instance.signOut();
-    Snackbar.showSnackBar("Successfully logged out.", duration: 5);
+    Snackbar.showSnackBar("Successfully logged out.");
   }
 
   signInWithGoogle() async {
@@ -112,11 +115,6 @@ class UserController {
       idToken: googleAuth.idToken,
     );
 
-    UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-
-    Snackbar.showSnackBar(
-        userCredential.user?.displayName ?? 'No display name available');
-    Snackbar.showSnackBar("Successfully logged in!", duration: 5);
+    await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

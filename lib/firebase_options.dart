@@ -33,7 +33,10 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -48,30 +51,19 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyCtQtqNa25YxMe7RPXT91MQZ7_G6r_aDUk',
-    appId: '1:815139196583:web:5d942f3d67f0c2da6ed582',
+    appId: '1:815139196583:web:cd5f69fa50d3508d6ed582',
     messagingSenderId: '815139196583',
     projectId: 'spendwise-a8baa',
     authDomain: 'spendwise-a8baa.firebaseapp.com',
     storageBucket: 'spendwise-a8baa.firebasestorage.app',
-    measurementId: 'G-NB46ZXX06K',
+    measurementId: 'G-PFEFFWEHKE',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyApYyeFtYhwKVfUHTbwZg2ESaT8n6VGkPY',
-    appId: '1:815139196583:android:94b0825a7914dc996ed582',
+    appId: '1:815139196583:android:212c47aa84be2a796ed582',
     messagingSenderId: '815139196583',
     projectId: 'spendwise-a8baa',
     storageBucket: 'spendwise-a8baa.firebasestorage.app',
   );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCtQtqNa25YxMe7RPXT91MQZ7_G6r_aDUk',
-    appId: '1:815139196583:web:4dc2e0552fb8b40a6ed582',
-    messagingSenderId: '815139196583',
-    projectId: 'spendwise-a8baa',
-    authDomain: 'spendwise-a8baa.firebaseapp.com',
-    storageBucket: 'spendwise-a8baa.firebasestorage.app',
-    measurementId: 'G-8M3RLHRB6H',
-  );
-
 }

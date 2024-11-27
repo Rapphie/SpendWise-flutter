@@ -13,7 +13,7 @@ class AuthenticationController extends StatelessWidget {
       builder: (context, snapshot) {
         // Check if the user is logged in
         if (snapshot.hasData) {
-          return HomeScreen();
+          return const HomeScreen();
         } else {
           return LoginScreen();
         }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spend_wise/controllers/user_controller.dart';
+import 'package:spend_wise/controllers/remote/user_controller.dart';
 
 class SignupScreen extends StatelessWidget {
   SignupScreen({super.key});

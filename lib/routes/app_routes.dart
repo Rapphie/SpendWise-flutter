@@ -1,4 +1,4 @@
-import 'package:spend_wise/controllers/auth_controller.dart';
+import 'package:spend_wise/controllers/remote/auth_controller.dart';
 import 'package:spend_wise/views/home.dart';
 import 'package:go_router/go_router.dart';
 import 'package:spend_wise/views/login.dart';
@@ -10,7 +10,7 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => HomeScreen(),
+      builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
       path: '/auth',

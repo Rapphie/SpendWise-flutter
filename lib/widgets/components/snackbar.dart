@@ -5,11 +5,16 @@ class Snackbar {
       GlobalKey<ScaffoldMessengerState>();
 
   static bool _isSnackBarVisible = false; // Track SnackBar visibility
+  static String? _previousMessage; // Store the last message
 
-  static void showSnackBar(String message, {int duration = 2}) {
-    if (_isSnackBarVisible) return; // Prevent showing another SnackBar
+  static void showSnackBar(String message, {int duration = 3}) {
+    if (_isSnackBarVisible && _previousMessage == message) {
+      return; // Prevent showing the same SnackBar while one is visible
+    }
 
-    _isSnackBarVisible = true;
+    _previousMessage = message; // Update the previous message
+    _isSnackBarVisible = true; // Mark SnackBar as visible
+
     scaffoldMessengerKey.currentState
         ?.showSnackBar(
           SnackBar(
@@ -19,7 +24,7 @@ class Snackbar {
         )
         .closed
         .then((_) {
-      // Reset the flag when the SnackBar disappears
+      // Reset visibility flag when the SnackBar disappears
       _isSnackBarVisible = false;
     });
   }
