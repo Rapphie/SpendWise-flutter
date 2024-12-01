@@ -1,24 +1,19 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:spend_wise/controllers/remote/user_controller.dart';
-import 'package:spend_wise/widgets/components/snackbar.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class TransactionScreen extends StatefulWidget {
+  const TransactionScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<TransactionScreen> createState() => _TransactionScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final user = FirebaseAuth.instance.currentUser!;
+class _TransactionScreenState extends State<TransactionScreen> {
   final UserController userController = UserController();
 
   @override
   void initState() {
     super.initState();
-    Snackbar.showSnackBar("Successfully signed in as ${user.email}",
-        duration: 5);
   }
 
   @override
@@ -30,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const Text("Home"),
             ElevatedButton(
-              onPressed: userController.logoutUser, // Fixed issue here
+              onPressed: userController.logoutUser,
               child: const Text('Logout'),
             ),
           ],
