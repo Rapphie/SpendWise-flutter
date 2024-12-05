@@ -1,8 +1,8 @@
 import 'package:spend_wise/controllers/remote/auth_controller.dart';
-import 'package:spend_wise/views/home.dart';
+import 'package:spend_wise/screens/home.dart';
 import 'package:go_router/go_router.dart';
-import 'package:spend_wise/views/login.dart';
-import 'package:spend_wise/views/signup.dart';
+import 'package:spend_wise/screens/login.dart';
+import 'package:spend_wise/screens/signup.dart';
 
 /// The route configuration.
 final GoRouter router = GoRouter(

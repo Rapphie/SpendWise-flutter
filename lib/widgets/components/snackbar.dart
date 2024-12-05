@@ -7,8 +7,8 @@ class Snackbar {
   static bool _isSnackBarVisible = false; // Track SnackBar visibility
   static String? _previousMessage; // Store the last message
 
-  static void showSnackBar(String message, {int duration = 3}) {
-    if (_isSnackBarVisible && _previousMessage == message) {
+  static void showSnackbar(String message, {int duration = 3}) {
+    if (_isSnackBarVisible && _previousMessage == message || message.isEmpty) {
       return; // Prevent showing the same SnackBar while one is visible
     }
 

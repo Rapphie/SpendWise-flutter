@@ -6,21 +6,26 @@ import 'package:spend_wise/widgets/components/snackbar.dart';
 import 'package:spend_wise/constants/app_strings.dart';
 
 class UserController {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
   void loginUser({
-    required String email,
-    required String password,
+    String? email,
+    String? password,
     required BuildContext context,
   }) async {
     LoadingIndicatorDialog().show(context); // a throbber
 
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
+        email: email!,
+        password: password!,
       );
       LoadingIndicatorDialog()
           .dismiss(); // dismiss the throbber after successful login
+      final user = FirebaseAuth.instance.currentUser!;
+      Snackbar.showSnackbar("Successfully logged in as ${user.email}");
     } on FirebaseAuthException catch (e) {
+      String snackbarMessage;
       switch (e.code) {
         case 'user-not-found':
           snackbarMessage = 'User email not found.';
@@ -40,15 +45,15 @@ class UserController {
       //LoadingIndicatorDialog is an async class need to use Future to resolve it.
       Future.delayed(const Duration(seconds: 1), () {
         LoadingIndicatorDialog().dismiss();
-        Snackbar.showSnackBar(snackbarMessage);
+        Snackbar.showSnackbar(snackbarMessage);
       });
     }
   }
 
   void signupUser({
-    required String email,
-    required String password,
-    required String confirmPassword,
+    String? email,
+    String? password,
+    String? confirmPassword,
     required BuildContext context,
   }) async {
     LoadingIndicatorDialog().show(context);
@@ -59,17 +64,17 @@ class UserController {
       //LoadingIndicatorDialog is an async class need to use Future to resolve it.
       Future.delayed(const Duration(seconds: 1), () {
         LoadingIndicatorDialog().dismiss();
-        Snackbar.showSnackBar(snackbarMessage);
+        Snackbar.showSnackbar(snackbarMessage);
       });
     } else {
       try {
         await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
+          email: email!,
+          password: password!,
         );
 
         LoadingIndicatorDialog().dismiss();
-        Snackbar.showSnackBar('User created successfully!');
+        Snackbar.showSnackbar('User created successfully!');
       } on FirebaseAuthException catch (e) {
         switch (e.code) {
           case 'email-already-in-use':
@@ -89,7 +94,7 @@ class UserController {
         }
         Future.delayed(const Duration(seconds: 1), () {
           LoadingIndicatorDialog().dismiss();
-          Snackbar.showSnackBar(snackbarMessage);
+          Snackbar.showSnackbar(snackbarMessage);
         });
       }
     }
@@ -97,14 +102,14 @@ class UserController {
 
   void logoutUser() async {
     await FirebaseAuth.instance.signOut();
-    Snackbar.showSnackBar("Successfully logged out.");
+    Snackbar.showSnackbar("Successfully logged out.");
   }
 
   signInWithGoogle() async {
     GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
     if (googleUser == null) {
-      Snackbar.showSnackBar('Google sign-in aborted or failed.');
+      Snackbar.showSnackbar('Google sign-in aborted or failed.');
       return; // Exit if googleUser is null
     }
 
