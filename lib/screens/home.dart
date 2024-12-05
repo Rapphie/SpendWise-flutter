@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const Text("Home"),
             ElevatedButton(
-              onPressed: userController.logoutUser, // Fixed issue here
+              onPressed: userController.logoutUser,
               child: const Text('Logout'),
             ),
           ],
