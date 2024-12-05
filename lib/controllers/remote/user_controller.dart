@@ -15,7 +15,7 @@ class UserController {
   }) async {
     LoadingIndicatorDialog().show(context); // a throbber
     final user = FirebaseAuth.instance.currentUser!;
-    Snackbar.showSnackBar("Successfully signed in as ${user.email}",
+    Snackbar.showSnackbar("Successfully signed in as ${user.email}",
         duration: 5);
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -124,7 +124,7 @@ class UserController {
 
     await FirebaseAuth.instance.signInWithCredential(credential);
     final user = FirebaseAuth.instance.currentUser!;
-    Snackbar.showSnackBar("Successfully signed in as ${user.email}",
+    Snackbar.showSnackbar("Successfully signed in as ${user.email}",
         duration: 5);
   }
 }
