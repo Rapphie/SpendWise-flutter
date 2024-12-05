@@ -10,7 +10,7 @@ final GoRouter router = GoRouter(
   routes: [
     GoRoute(
       path: '/',
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const TransactionScreen(),
     ),
     GoRoute(
       path: '/auth',

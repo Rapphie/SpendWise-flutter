@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:spend_wise/controllers/remote/user_controller.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class TransactionScreen extends StatefulWidget {
+  const TransactionScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<TransactionScreen> createState() => _TransactionScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _TransactionScreenState extends State<TransactionScreen> {
   final UserController userController = UserController();
 
   @override
