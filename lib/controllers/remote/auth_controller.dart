@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spend_wise/screens/home.dart';
-import 'package:spend_wise/screens/login.dart';
+import 'package:spend_wise/screens/auth/login.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthenticationController extends StatelessWidget {

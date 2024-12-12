@@ -6,8 +6,6 @@ import 'package:spend_wise/widgets/components/snackbar.dart';
 import 'package:spend_wise/constants/app_strings.dart';
 
 class UserController {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
   void loginUser({
     String? email,
     String? password,
@@ -15,15 +13,13 @@ class UserController {
   }) async {
     LoadingIndicatorDialog().show(context); // a throbber
     final user = FirebaseAuth.instance.currentUser!;
-    Snackbar.showSnackbar("Successfully signed in as ${user.email}",
-        duration: 5);
+    Snackbar.showSnackbar("Successfully signed in as ${user.email}", duration: 5);
     try {
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email!,
         password: password!,
       );
-      LoadingIndicatorDialog()
-          .dismiss(); // dismiss the throbber after successful login
+      LoadingIndicatorDialog().dismiss(); // dismiss the throbber after successful login
       final user = FirebaseAuth.instance.currentUser!;
       Snackbar.showSnackbar("Successfully logged in as ${user.email}");
     } on FirebaseAuthException catch (e) {
@@ -124,7 +120,6 @@ class UserController {
 
     await FirebaseAuth.instance.signInWithCredential(credential);
     final user = FirebaseAuth.instance.currentUser!;
-    Snackbar.showSnackbar("Successfully signed in as ${user.email}",
-        duration: 5);
+    Snackbar.showSnackbar("Successfully signed in as ${user.email}", duration: 5);
   }
 }
