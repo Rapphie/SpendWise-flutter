@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:spend_wise/models/Group/GroupRemote.dart';
+import 'package:spend_wise/group/GroupRemote.dart';
 
 const String GROUPS_COLLECTION_REF = "groups";
 
