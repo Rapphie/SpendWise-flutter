@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
-import 'package:spend_wise/features/auth/domain/repositories/auth_repo.dart';
+import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 
-class FirebaseAuthRepo implements AuthRepo {
+class FirebaseAuthRepository implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseFirestore firebasefiresetore = FirebaseFirestore.instance;
+  final FirebaseFirestore firebasefirestore = FirebaseFirestore.instance;
 
   @override
   Future<AppUser?> signInWithEmailAndPassword(
@@ -22,6 +23,8 @@ class FirebaseAuthRepo implements AuthRepo {
         email: email,
         name: '',
         groups: [],
+        createdOn: null,
+        updatedOn: null,
       );
 
       return user;
@@ -39,22 +42,32 @@ class FirebaseAuthRepo implements AuthRepo {
         password: password,
       );
 
+      String groupId = firebasefirestore.collection('groups').doc().id;
+
       AppUser user = AppUser(
         uid: userCredential.user!.uid,
         name: name,
         email: email,
-        groups: ['Personal'],
+        groups: [groupId],
+        createdOn: Timestamp.now(),
+        updatedOn: Timestamp.now(),
       );
-      await firebasefiresetore.collection('users').doc(user.uid).set(
+      AppGroup group = AppGroup(
+        uid: groupId,
+        name: 'Personal',
+        ownerId: user.uid,
+        memberList: [user.uid],
+        createdOn: Timestamp.now(),
+        updatedOn: Timestamp.now(),
+      );
+
+      await firebasefirestore.collection('users').doc(user.uid).set(
             user.toJson(),
           );
 
-      await firebasefiresetore.collection('groups').doc().set({
-        'uid': firebasefiresetore.collection('groups').doc().id,
-        'name': 'Personal',
-        'owner_id': user.uid,
-        'members': [user.uid],
-      });
+      await firebasefirestore.collection('groups').doc(groupId).set(
+            group.toJson(),
+          );
       return user;
     } catch (e) {
       throw Exception('Failed to login: $e');
@@ -76,16 +89,31 @@ class FirebaseAuthRepo implements AuthRepo {
       );
 
       UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
+      String groupId = firebasefirestore.collection('groups').doc().id;
 
       AppUser user = AppUser(
         uid: userCredential.user!.uid,
         email: userCredential.user!.email!,
         name: userCredential.user!.displayName ?? '',
         groups: ['personal'],
+        createdOn: Timestamp.now(),
+        updatedOn: Timestamp.now(),
+      );
+      AppGroup group = AppGroup(
+        uid: groupId,
+        name: 'Personal',
+        ownerId: user.uid,
+        memberList: [user.uid],
+        createdOn: Timestamp.now(),
+        updatedOn: Timestamp.now(),
       );
 
-      await firebasefiresetore.collection('users').doc(user.uid).set(
+      await firebasefirestore.collection('users').doc(user.uid).set(
             user.toJson(),
+          );
+
+      await firebasefirestore.collection('groups').doc(groupId).set(
+            group.toJson(),
           );
       return user;
     } catch (e) {

@@ -1,18 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AppUser {
+class AppGroup {
   final String uid;
-  final String email;
   final String name;
-  final List<String> groups;
+  final String ownerId;
+  final List<String>? categoryList;
+  final List<String> memberList;
   final Timestamp? createdOn;
   final Timestamp? updatedOn;
 
-  AppUser({
+  AppGroup({
     required this.uid,
-    required this.email,
     required this.name,
-    required this.groups,
+    required this.ownerId,
+    this.categoryList,
+    required this.memberList,
     this.createdOn,
     this.updatedOn,
   });
@@ -20,20 +22,22 @@ class AppUser {
   Map<String, dynamic> toJson() {
     return {
       'uid': uid,
-      'email': email,
       'name': name,
-      'groups': groups,
+      'ownerId': ownerId,
+      'categoryList': categoryList,
+      'memberList': memberList,
       'createdOn': createdOn,
       'updatedOn': updatedOn,
     };
   }
 
-  factory AppUser.fromJson(Map<String, dynamic> jsonUser) {
-    return AppUser(
+  factory AppGroup.fromJson(Map<String, dynamic> jsonUser) {
+    return AppGroup(
       uid: jsonUser['uid'],
-      email: jsonUser['email'],
       name: jsonUser['name'],
-      groups: List<String>.from(jsonUser['groups']),
+      ownerId: jsonUser['ownerId'],
+      categoryList: jsonUser['categoryList'],
+      memberList: jsonUser['memberList'],
       createdOn: jsonUser['createdOn'],
       updatedOn: jsonUser['updatedOn'],
     );

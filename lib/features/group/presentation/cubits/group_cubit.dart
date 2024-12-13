@@ -24,7 +24,6 @@ class AuthCubit extends Cubit<AuthState> {
 
   AppUser? get currentUser => _currentUser;
 
-
   Future<void> login({required String email, required String password}) async {
     try {
       emit(AuthLoading());

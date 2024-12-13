@@ -1,6 +1,6 @@
 import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 
-abstract class AuthRepo {
+abstract class AuthRepository {
   Future<AppUser?> signInWithEmailAndPassword({required String email, required String password});
 
   Future<AppUser?> registerWithEmailAndPassword(

@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:spend_wise/features/user/UserRemote.dart';
+import 'package:spend_wise/user/UserRemote.dart';
 
 const String USERS_COLLECTION_REF = "users";
 

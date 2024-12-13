@@ -1,10 +1,10 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
-import 'package:spend_wise/features/auth/domain/repositories/auth_repo.dart';
+import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_states.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  final AuthRepo authRepo;
+  final AuthRepository authRepo;
   AppUser? _currentUser;
 
   AuthCubit(this.authRepo) : super(AuthInitial());
