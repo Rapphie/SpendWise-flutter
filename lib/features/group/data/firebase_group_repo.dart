@@ -75,4 +75,63 @@ class FirebaseGroupRepository implements GroupRepository {
       throw Exception('Failed to delete group: $e');
     }
   }
+
+  @override
+  Future<void> inviteMember({required String groupUid, required String memberUid}) async {
+    try {
+      await firebasefirestore.collection('groupInvites').add({
+        'groupUid': groupUid,
+        'memberUid': memberUid,
+        'invitedBy': currentUser!.uid,
+        'status': 'pending',
+        'createdOn': Timestamp.now(),
+      });
+    } catch (e) {
+      throw Exception('Failed to invite member: $e');
+    }
+  }
+
+  @override
+  Future<void> acceptInvite({required String groupUid, required String memberUid}) async {
+    try {
+      // Add member to the group's memberList
+      await firebasefirestore.collection('groups').doc(groupUid).update({
+        'memberList': FieldValue.arrayUnion([memberUid]),
+        'updatedOn': Timestamp.now(),
+      });
+
+      // Remove the invite
+      QuerySnapshot invites = await firebasefirestore.collection('groupInvites')
+          .where('groupUid', isEqualTo: groupUid)
+          .where('memberUid', isEqualTo: memberUid)
+          .get();
+
+      for (var doc in invites.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      throw Exception('Failed to accept invite: $e');
+    }
+  }
+
+  @override
+  Future<List<AppGroup>> getUserGroups() async {
+    try {
+      if (currentUser == null) {
+        throw Exception('No user is currently logged in.');
+      }
+      QuerySnapshot groupSnapshot = await firebasefirestore
+          .collection('groups')
+          .where('memberList', arrayContains: currentUser!.uid)
+          .get();
+
+      List<AppGroup> groups = groupSnapshot.docs.map((doc) {
+        return AppGroup.fromJson(doc.data() as Map<String, dynamic>);
+      }).toList();
+
+      return groups;
+    } catch (e) {
+      throw Exception('Failed to load user groups: $e');
+    }
+  }
 }

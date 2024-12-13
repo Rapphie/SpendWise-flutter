@@ -5,4 +5,7 @@ abstract class GroupRepository {
   Future<List<AppGroup>?> getMembers({required String groupuid});
   Future<List<String>?> getCategories({required String groupuid});
   Future<void> deleteGroup({required String groupuid});
+  Future<void> inviteMember({required String groupUid, required String memberUid});
+  Future<void> acceptInvite({required String groupUid, required String memberUid});
+  Future<List<AppGroup>> getUserGroups();
 }

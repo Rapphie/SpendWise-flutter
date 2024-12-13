@@ -1,100 +1,63 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
-import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dart';
-import 'package:spend_wise/features/auth/presentation/cubits/auth_states.dart';
+import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
+import 'group_states.dart';
 
-class AuthCubit extends Cubit<AuthState> {
-  final AuthRepository authRepo;
-  AppUser? _currentUser;
 
-  AuthCubit({required this.authRepo}) : super(AuthInitial());
+class GroupCubit extends Cubit<GroupState> {
+  final GroupRepository groupRepository;
 
-  void checkAuth() async {
-    emit(AuthLoading());
+  GroupCubit({required this.groupRepository}) : super(GroupInitial());
 
-    final user = await authRepo.getCurrentUser();
-    if (user != null) {
-      _currentUser = user;
-      emit(Authenticated(user: user));
-    } else {
-      emit(AuthFailure(message: 'Not logged in.'));
-      emit(Unauthenticated());
-    }
-  }
-
-  AppUser? get currentUser => _currentUser;
-
-  Future<void> login({required String email, required String password}) async {
+  Future<void> createGroup({required String name}) async {
     try {
-      emit(AuthLoading());
-      final user = await authRepo.signInWithEmailAndPassword(email: email, password: password);
-      if (user != null) {
-        _currentUser = user;
-        emit(Authenticated(user: user));
+      emit(GroupLoading());
+      final group = await groupRepository.createGroup(name: name);
+      if (group != null) {
+        emit(GroupCreated(group: group));
       } else {
-        emit(AuthFailure(message: 'Failed to login.'));
-        emit(Unauthenticated());
+        emit(GroupError(message: 'Failed to create group.'));
       }
     } catch (e) {
-      String message = '';
-      if (e.toString().contains('invalid-email')) {
-        message = 'Invalid email address.';
-      } else if (e.toString().contains('invalid-credential')) {
-        message = 'Incorrect email or password.';
-      } else {
-        message = 'Unknown error. Please try again.';
-      }
-      emit(AuthFailure(message: message));
-      emit(Unauthenticated());
+      emit(GroupError(message: 'Error: $e'));
     }
   }
 
-  Future<void> loginWithGoogle() async {
+  Future<void> loadUserGroups() async {
     try {
-      emit(AuthLoading());
-      final user = await authRepo.signInWithGoogle();
-      if (user != null) {
-        _currentUser = user;
-        emit(Authenticated(user: user));
-      } else {
-        emit(AuthFailure(message: 'Failed to login with Google.'));
-        emit(Unauthenticated());
-      }
+      emit(GroupLoading());
+      final groups = await groupRepository.getUserGroups();
+      emit(GroupsLoaded(groups: groups));
     } catch (e) {
-      emit(AuthFailure(message: 'Error: $e'));
-      emit(Unauthenticated());
+      emit(GroupError(message: 'Error: $e'));
     }
   }
 
-  Future<void> register(
-      {required String name, required String email, required String password}) async {
+  Future<void> inviteMember({required String groupUid, required String memberUid}) async {
     try {
-      emit(AuthLoading());
-      final user =
-          await authRepo.registerWithEmailAndPassword(name: name, email: email, password: password);
-      if (user != null) {
-        _currentUser = user;
-        emit(Authenticated(user: user));
-      } else {
-        emit(AuthFailure(message: 'Failed to register.'));
-        emit(Unauthenticated());
-      }
+      await groupRepository.inviteMember(groupUid: groupUid, memberUid: memberUid);
+      emit(GroupInviteSent());
     } catch (e) {
-      String message = '';
-      if (e.toString().contains('invalid-email')) {
-        message = 'Invalid email address.';
-      } else if (e.toString().contains('weak-password')) {
-        message = 'Minimum passowrd length is 6 characters.';
-      } else {
-        message = 'Unknown error. Please try again.';
-      }
-      emit(AuthFailure(message: message));
-      emit(Unauthenticated());
+      emit(GroupError(message: 'Failed to invite member: $e'));
     }
   }
 
-  Future<void> logout() async {
-    authRepo.logout();
-    emit(Unauthenticated());
+  Future<void> acceptInvite({required String groupUid, required String memberUid}) async {
+    try {
+      await groupRepository.acceptInvite(groupUid: groupUid, memberUid: memberUid);
+      emit(GroupInviteAccepted());
+    } catch (e) {
+      emit(GroupError(message: 'Failed to accept invite: $e'));
+    }
+  }
+
+  Future<void> deleteGroup({required String groupUid}) async {
+    try {
+      emit(GroupLoading());
+      await groupRepository.deleteGroup(groupuid: groupUid);
+      // Optionally, reload the list of groups
+      await loadUserGroups();
+    } catch (e) {
+      emit(GroupError(message: 'Failed to delete group: $e'));
+    }
   }
 }
