@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_cubit.dart';
+import 'package:spend_wise/features/group/presentation/pages/group_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,6 +24,15 @@ class _HomePageState extends State<HomePage> {
             },
           ),
         ],
+      ),
+      body: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const GroupPage()),
+          );
+        },
+        child: const Text("Go to Group Page"),
       ),
     );
   }

@@ -18,6 +18,7 @@ class FirebaseGroupRepository implements GroupRepository {
         uid: groupId,
         name: name,
         ownerId: currentUser!.uid,
+        categoryList: [],
         memberList: [currentUser!.uid],
         createdOn: Timestamp.now(),
         updatedOn: Timestamp.now(),

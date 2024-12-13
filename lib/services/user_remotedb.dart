@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:spend_wise/user/UserRemote.dart';
+import 'package:spend_wise/features/user/UserRemote.dart';
 
 const String USERS_COLLECTION_REF = "users";
 
@@ -8,12 +8,11 @@ class UserRemoteDb {
   late final CollectionReference _usersRef;
 
   UserRemoteDb() {
-    _usersRef =
-        _firestore.collection(USERS_COLLECTION_REF).withConverter<UserRemote>(
-            fromFirestore: (snapshots, _) => UserRemote.fromJson(
-                  snapshots.data()!,
-                ),
-            toFirestore: (user, _) => user.toJson());
+    _usersRef = _firestore.collection(USERS_COLLECTION_REF).withConverter<UserRemote>(
+        fromFirestore: (snapshots, _) => UserRemote.fromJson(
+              snapshots.data()!,
+            ),
+        toFirestore: (user, _) => user.toJson());
   }
 
   Stream<QuerySnapshot> getUsers() {
