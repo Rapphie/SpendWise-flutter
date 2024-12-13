@@ -1,3 +1,4 @@
+import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 
 abstract class GroupRepository {

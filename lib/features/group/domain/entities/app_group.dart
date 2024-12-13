@@ -36,8 +36,9 @@ class AppGroup {
       uid: jsonUser['uid'],
       name: jsonUser['name'],
       ownerId: jsonUser['ownerId'],
-      categoryList: jsonUser['categoryList'],
-      memberList: jsonUser['memberList'],
+      categoryList:
+          jsonUser['categoryList'] != null ? List<String>.from(jsonUser['categoryList']) : null,
+      memberList: List<String>.from(jsonUser['memberList']),
       createdOn: jsonUser['createdOn'],
       updatedOn: jsonUser['updatedOn'],
     );

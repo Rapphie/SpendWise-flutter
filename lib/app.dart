@@ -4,7 +4,9 @@ import 'package:spend_wise/features/auth/data/firebase_auth_repository.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_states.dart';
 import 'package:spend_wise/features/auth/presentation/pages/auth_page.dart';
-import 'package:spend_wise/features/auth/presentation/pages/toggle_login_register.dart';
+import 'package:spend_wise/features/group/data/firebase_group_repo.dart';
+import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
+import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
 import 'package:spend_wise/features/home/presentation/pages/home_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -14,11 +16,26 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => AuthCubit(authRepo: authRepo)..checkAuth(),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<GroupRepository>(
+          create: (context) => FirebaseGroupRepository(),
+        ),
+      ],
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => AuthCubit(authRepo: authRepo)..checkAuth(),
+          ),
+          BlocProvider(
+            create: (context) =>
+                GroupCubit(groupRepository: context.read<GroupRepository>())..loadUserGroups(),
+          ),
+        ],
         child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            home: BlocConsumer<AuthCubit, AuthState>(builder: (context, authState) {
+          debugShowCheckedModeBanner: false,
+          home: BlocConsumer<AuthCubit, AuthState>(
+            builder: (context, authState) {
               print(authState);
 
               if (authState is Authenticated) {
@@ -28,10 +45,15 @@ class MyApp extends StatelessWidget {
               } else {
                 return const Scaffold(body: Center(child: CircularProgressIndicator()));
               }
-            }, listener: (context, state) {
+            },
+            listener: (context, state) {
               if (state is AuthFailure) {
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
               }
-            })));
+            },
+          ),
+        ),
+      ),
+    );
   }
 }

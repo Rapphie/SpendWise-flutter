@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 import 'group_states.dart';
-
 
 class GroupCubit extends Cubit<GroupState> {
   final GroupRepository groupRepository;

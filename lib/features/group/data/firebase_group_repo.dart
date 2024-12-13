@@ -118,9 +118,6 @@ class FirebaseGroupRepository implements GroupRepository {
   @override
   Future<List<AppGroup>> getUserGroups() async {
     try {
-      if (currentUser == null) {
-        throw Exception('No user is currently logged in.');
-      }
       QuerySnapshot groupSnapshot = await firebasefirestore
           .collection('groups')
           .where('memberList', arrayContains: currentUser!.uid)
