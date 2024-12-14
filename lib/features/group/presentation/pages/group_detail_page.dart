@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/group/domain/entities/app_group.dart';
@@ -8,7 +7,7 @@ import 'package:spend_wise/features/group/domain/repositories/group_repository.d
 class GroupDetailPage extends StatelessWidget {
   final AppGroup group;
 
-  GroupDetailPage({required this.group});
+  const GroupDetailPage({super.key, required this.group});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +31,7 @@ class GroupDetailPage extends StatelessWidget {
             // Display group members
             Expanded(
               child: FutureBuilder(
-                future: context.read<GroupRepository>().getMembers(groupuid: group.uid),
+                future: context.read<GroupRepository>().getMembers(groupUid: group.uid),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -47,7 +46,7 @@ class GroupDetailPage extends StatelessWidget {
                       },
                     );
                   } else {
-                    return Center(child: Text('No members found.'));
+                    return const Center(child: Text('No members found.'));
                   }
                 },
               ),
@@ -57,7 +56,7 @@ class GroupDetailPage extends StatelessWidget {
               onPressed: () {
                 // Implement invite member functionality
               },
-              child: Text('Invite Member'),
+              child: const Text('Invite Member'),
             ),
           ],
         ),

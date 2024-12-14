@@ -4,7 +4,7 @@ import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 
-class FirebaseGroupRepository implements GroupRepository {
+class GroupRepoImpl implements GroupRepository {
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
   final FirebaseFirestore firebasefirestore = FirebaseFirestore.instance;
@@ -32,14 +32,15 @@ class FirebaseGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<List<AppGroup>?> getMembers({required String groupuid}) async {
+  Future<List<AppGroup>?> getMembers({required String groupUid}) async {
     try {
-      DocumentSnapshot groupDoc = await firebasefirestore.collection('groups').doc(groupuid).get();
+      DocumentSnapshot groupDoc = await firebasefirestore.collection('groups').doc(groupUid).get();
       if (groupDoc.exists) {
         List<dynamic> memberIds = groupDoc.get('memberList');
         List<AppGroup> members = [];
         for (var memberId in memberIds) {
-          DocumentSnapshot userDoc = await firebasefirestore.collection('users').doc(memberId as String).get();
+          DocumentSnapshot userDoc =
+              await firebasefirestore.collection('users').doc(memberId as String).get();
           if (userDoc.exists) {
             members.add(AppGroup.fromJson(userDoc.data() as Map<String, dynamic>));
           }
@@ -54,12 +55,13 @@ class FirebaseGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<List<String>?> getCategories({required String groupuid}) async {
+  Future<List<String>?> getCategories({required String groupUid}) async {
     try {
-      DocumentSnapshot groupDoc = await firebasefirestore.collection('groups').doc(groupuid).get();
+      DocumentSnapshot groupDoc =
+          await firebasefirestore.collection('groups').doc(groupUid).get();
       if (groupDoc.exists) {
-        List<dynamic> categories = groupDoc.get('categories');
-        return categories.cast<String>();
+        List<dynamic> categoryList = groupDoc.get('categoryList') ?? [];
+        return categoryList.cast<String>();
       } else {
         return null;
       }
@@ -69,9 +71,9 @@ class FirebaseGroupRepository implements GroupRepository {
   }
 
   @override
-  Future<void> deleteGroup({required String groupuid}) async {
+  Future<void> deleteGroup({required String groupUid}) async {
     try {
-      await firebasefirestore.collection('groups').doc(groupuid).delete();
+      await firebasefirestore.collection('groups').doc(groupUid).delete();
     } catch (e) {
       throw Exception('Failed to delete group: $e');
     }
@@ -80,6 +82,13 @@ class FirebaseGroupRepository implements GroupRepository {
   @override
   Future<void> inviteMember({required String groupUid, required String memberUid}) async {
     try {
+      // Check if the user is already a member of the group
+      final groupDoc = await firebasefirestore.collection('groups').doc(groupUid).get();
+      final groupData = groupDoc.data();
+      if (groupData != null && (groupData['members'] as List).contains(memberUid)) {
+        throw Exception('User is already a member of the group');
+      }
+
       await firebasefirestore.collection('groupInvites').add({
         'groupUid': groupUid,
         'memberUid': memberUid,
@@ -102,7 +111,8 @@ class FirebaseGroupRepository implements GroupRepository {
       });
 
       // Remove the invite
-      QuerySnapshot invites = await firebasefirestore.collection('groupInvites')
+      QuerySnapshot invites = await firebasefirestore
+          .collection('groupInvites')
           .where('groupUid', isEqualTo: groupUid)
           .where('memberUid', isEqualTo: memberUid)
           .get();

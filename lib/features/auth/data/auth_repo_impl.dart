@@ -5,7 +5,7 @@ import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dar
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 
-class FirebaseAuthRepository implements AuthRepository {
+class AuthRepoImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebasefirestore = FirebaseFirestore.instance;
 
