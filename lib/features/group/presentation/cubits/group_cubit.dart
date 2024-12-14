@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 import 'group_states.dart';
 
@@ -12,11 +11,7 @@ class GroupCubit extends Cubit<GroupState> {
     try {
       emit(GroupLoading());
       final group = await groupRepository.createGroup(name: name);
-      if (group != null) {
-        emit(GroupCreated(group: group));
-      } else {
-        emit(GroupError(message: 'Failed to create group.'));
-      }
+      emit(GroupCreated(group: group));
     } catch (e) {
       emit(GroupError(message: 'Error: $e'));
     }
@@ -32,24 +27,6 @@ class GroupCubit extends Cubit<GroupState> {
     }
   }
 
-  Future<void> inviteMember({required String groupUid, required String memberUid}) async {
-    try {
-      await groupRepository.inviteMember(groupUid: groupUid, memberUid: memberUid);
-      emit(GroupInviteSent());
-    } catch (e) {
-      emit(GroupError(message: 'Failed to invite member: $e'));
-    }
-  }
-
-  Future<void> acceptInvite({required String groupUid, required String memberUid}) async {
-    try {
-      await groupRepository.acceptInvite(groupUid: groupUid, memberUid: memberUid);
-      emit(GroupInviteAccepted());
-    } catch (e) {
-      emit(GroupError(message: 'Failed to accept invite: $e'));
-    }
-  }
-
   Future<void> deleteGroup({required String groupUid}) async {
     try {
       emit(GroupLoading());
@@ -58,6 +35,16 @@ class GroupCubit extends Cubit<GroupState> {
       await loadUserGroups();
     } catch (e) {
       emit(GroupError(message: 'Failed to delete group: $e'));
+    }
+  }
+
+  Future<void> updateGroupName({required String groupUid, required String newName}) async {
+    try {
+      emit(GroupLoading());
+      await groupRepository.updateGroup(groupUid: groupUid, newName: newName);
+      emit(GroupUpdated(message: "Group updated successfully!"));
+    } catch (e) {
+      emit(GroupError(message: 'Failed to update group name: $e'));
     }
   }
 }

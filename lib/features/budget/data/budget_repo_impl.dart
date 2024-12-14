@@ -118,40 +118,40 @@ class BudgetRepoImpl implements BudgetRepository {
     }
   }
 
-  @override
-  Future<void> createBudgetsForGroupCategories({
-    required String groupUid,
-    required double value,
-  }) async {
-    try {
-      // Fetch the group's categoryList
-      DocumentSnapshot groupDoc =
-          await firebasefirestore.collection('groups').doc(groupUid).get();
-      if (groupDoc.exists) {
-        List<dynamic> categoryList = groupDoc.get('categoryList') ?? [];
+  // @override
+  // Future<void> createBudgetsForGroupCategories({
+  //   required String groupUid,
+  //   required double value,
+  // }) async {
+  //   try {
+  //     // Fetch the group's categoryList
+  //     DocumentSnapshot groupDoc =
+  //         await firebasefirestore.collection('groups').doc(groupUid).get();
+  //     if (groupDoc.exists) {
+  //       List<dynamic> categoryList = groupDoc.get('categoryList') ?? [];
 
-        // Create a budget for each category
-        for (var category in categoryList) {
-          String budgetId = firebasefirestore.collection('budgets').doc().id;
+  //       // Create a budget for each category
+  //       for (var category in categoryList) {
+  //         String budgetId = firebasefirestore.collection('budgets').doc().id;
 
-          AppBudget budget = AppBudget(
-            uid: budgetId,
-            groupUid: groupUid,
-            name: category as String, // Using category as the name
-            category: category,
-            value: value,
-            memberId: currentUser!.uid,
-            createdOn: Timestamp.now(),
-            updatedOn: Timestamp.now(),
-          );
+  //         AppBudget budget = AppBudget(
+  //           uid: budgetId,
+  //           groupUid: groupUid,
+  //           name: category as String, // Using category as the name
+  //           category: category,
+  //           value: value,
+  //           memberId: currentUser!.uid,
+  //           createdOn: Timestamp.now(),
+  //           updatedOn: Timestamp.now(),
+  //         );
 
-          await firebasefirestore.collection('budgets').doc(budgetId).set(budget.toJson());
-        }
-      } else {
-        throw Exception('Group not found');
-      }
-    } catch (e) {
-      throw Exception('Failed to create budgets: $e');
-    }
-  }
+  //         await firebasefirestore.collection('budgets').doc(budgetId).set(budget.toJson());
+  //       }
+  //     } else {
+  //       throw Exception('Group not found');
+  //     }
+  //   } catch (e) {
+  //     throw Exception('Failed to create budgets: $e');
+  //   }
+  // }
 }

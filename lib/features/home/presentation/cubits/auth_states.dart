@@ -8,7 +8,8 @@ class AuthLoading extends AuthState {}
 
 class Authenticated extends AuthState {
   final AppUser user;
-  Authenticated({required this.user});
+  final String message;
+  Authenticated({required this.user, required this.message});
 }
 
 class Unauthenticated extends AuthState {}

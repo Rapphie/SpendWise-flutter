@@ -1,5 +1,4 @@
 import 'package:spend_wise/features/budget/domain/entities/app_budget.dart';
-import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 
 abstract class BudgetRepository {
   Future<AppBudget?> createBudget({required String name, required String groupUid});

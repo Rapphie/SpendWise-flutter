@@ -27,12 +27,16 @@ class _SignupPageState extends State<SignupPage> {
       if (password == confirmPassword) {
         authCubit.register(name: name, email: email, password: password);
       } else {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Passwords do not match!')));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Passwords do not match!'),
+          backgroundColor: Colors.redAccent,
+        ));
       }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please fill all fields!')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please fill all fields!'),
+        backgroundColor: Colors.redAccent,
+      ));
     }
   }
 

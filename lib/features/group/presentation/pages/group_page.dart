@@ -4,6 +4,7 @@ import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_states.dart';
 import 'package:spend_wise/features/group/presentation/pages/group_detail_page.dart';
+import 'package:spend_wise/features/group/presentation/pages/invites_page.dart';
 
 class GroupPage extends StatelessWidget {
   const GroupPage({super.key});
@@ -13,6 +14,19 @@ class GroupPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('My Groups'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.mail),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const InvitesPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: BlocBuilder<GroupCubit, GroupState>(
         builder: (context, state) {
@@ -24,6 +38,7 @@ class GroupPage extends StatelessWidget {
               itemCount: groups.length,
               itemBuilder: (context, index) {
                 final group = groups[index];
+                print('The Group id is: ' + group.uid);
                 return ListTile(
                   title: Text(group.name),
                   onTap: () {

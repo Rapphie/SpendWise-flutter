@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:spend_wise/features/group/domain/entities/app_group.dart';
+import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 
@@ -9,40 +10,48 @@ class GroupRepoImpl implements GroupRepository {
 
   final FirebaseFirestore firebasefirestore = FirebaseFirestore.instance;
 
+  String get currentUserUid => currentUser!.uid;
+
   @override
-  Future<AppGroup?> createGroup({required String name}) async {
+  Future<AppGroup> createGroup({required String name}) async {
     try {
-      String groupId = firebasefirestore.collection('groups').doc().id;
-
-      AppGroup group = AppGroup(
-        uid: groupId,
-        name: name,
-        ownerId: currentUser!.uid,
-        categoryList: [],
-        memberList: [currentUser!.uid],
-        createdOn: Timestamp.now(),
-        updatedOn: Timestamp.now(),
-      );
-
-      await firebasefirestore.collection('groups').doc(groupId).set(group.toJson());
+      final group = AppGroup(
+          uid: firebasefirestore.collection('groups').doc().id,
+          name: name,
+          ownerId: currentUserUid,
+          memberList: [currentUserUid],
+          categoryList: []);
+      await firebasefirestore.collection('groups').doc(group.uid).set(group.toJson());
       return group;
     } catch (e) {
-      throw Exception('Failed to login: $e');
+      throw Exception('Failed to create group: $e');
     }
   }
 
   @override
-  Future<List<AppGroup>?> getMembers({required String groupUid}) async {
+  Future<AppGroup> updateGroup({required String groupUid, required String newName}) async {
+    try {
+      DocumentReference groupRef = firebasefirestore.collection('groups').doc(groupUid);
+      await groupRef.update({'name': newName});
+      DocumentSnapshot updatedGroupDoc = await groupRef.get();
+      return AppGroup.fromJson(updatedGroupDoc.data() as Map<String, dynamic>);
+    } catch (e) {
+      throw Exception('Failed to update group: $e');
+    }
+  }
+
+  @override
+  Future<List<AppUser>?> getMembers({required String groupUid}) async {
     try {
       DocumentSnapshot groupDoc = await firebasefirestore.collection('groups').doc(groupUid).get();
       if (groupDoc.exists) {
         List<dynamic> memberIds = groupDoc.get('memberList');
-        List<AppGroup> members = [];
+        List<AppUser> members = [];
         for (var memberId in memberIds) {
           DocumentSnapshot userDoc =
               await firebasefirestore.collection('users').doc(memberId as String).get();
           if (userDoc.exists) {
-            members.add(AppGroup.fromJson(userDoc.data() as Map<String, dynamic>));
+            members.add(AppUser.fromJson(userDoc.data() as Map<String, dynamic>));
           }
         }
         return members;
@@ -57,8 +66,7 @@ class GroupRepoImpl implements GroupRepository {
   @override
   Future<List<String>?> getCategories({required String groupUid}) async {
     try {
-      DocumentSnapshot groupDoc =
-          await firebasefirestore.collection('groups').doc(groupUid).get();
+      DocumentSnapshot groupDoc = await firebasefirestore.collection('groups').doc(groupUid).get();
       if (groupDoc.exists) {
         List<dynamic> categoryList = groupDoc.get('categoryList') ?? [];
         return categoryList.cast<String>();
@@ -76,52 +84,6 @@ class GroupRepoImpl implements GroupRepository {
       await firebasefirestore.collection('groups').doc(groupUid).delete();
     } catch (e) {
       throw Exception('Failed to delete group: $e');
-    }
-  }
-
-  @override
-  Future<void> inviteMember({required String groupUid, required String memberUid}) async {
-    try {
-      // Check if the user is already a member of the group
-      final groupDoc = await firebasefirestore.collection('groups').doc(groupUid).get();
-      final groupData = groupDoc.data();
-      if (groupData != null && (groupData['members'] as List).contains(memberUid)) {
-        throw Exception('User is already a member of the group');
-      }
-
-      await firebasefirestore.collection('groupInvites').add({
-        'groupUid': groupUid,
-        'memberUid': memberUid,
-        'invitedBy': currentUser!.uid,
-        'status': 'pending',
-        'createdOn': Timestamp.now(),
-      });
-    } catch (e) {
-      throw Exception('Failed to invite member: $e');
-    }
-  }
-
-  @override
-  Future<void> acceptInvite({required String groupUid, required String memberUid}) async {
-    try {
-      // Add member to the group's memberList
-      await firebasefirestore.collection('groups').doc(groupUid).update({
-        'memberList': FieldValue.arrayUnion([memberUid]),
-        'updatedOn': Timestamp.now(),
-      });
-
-      // Remove the invite
-      QuerySnapshot invites = await firebasefirestore
-          .collection('groupInvites')
-          .where('groupUid', isEqualTo: groupUid)
-          .where('memberUid', isEqualTo: memberUid)
-          .get();
-
-      for (var doc in invites.docs) {
-        await doc.reference.delete();
-      }
-    } catch (e) {
-      throw Exception('Failed to accept invite: $e');
     }
   }
 

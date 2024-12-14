@@ -1,12 +1,44 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spend_wise/features/auth/presentation/cubits/auth_cubit.dart';
 
-class SignupPage extends StatelessWidget {
-  SignupPage({super.key});
+class SignupPage extends StatefulWidget {
+  final void Function()? onTap;
+  const SignupPage({super.key, required this.onTap});
 
+  @override
+  State<SignupPage> createState() => _SignupPageState();
+}
+
+class _SignupPageState extends State<SignupPage> {
+  final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
+
+  void register() {
+    final String name = nameController.text;
+    final String email = emailController.text;
+    final String password = passwordController.text;
+    final String confirmPassword = confirmPasswordController.text;
+    final authCubit = context.read<AuthCubit>();
+
+    if (name.isNotEmpty && email.isNotEmpty && password.isNotEmpty && confirmPassword.isNotEmpty) {
+      if (password == confirmPassword) {
+        authCubit.register(name: name, email: email, password: password);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Passwords do not match!'),
+          backgroundColor: Colors.redAccent,
+        ));
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please fill all fields!'),
+        backgroundColor: Colors.redAccent,
+      ));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +47,17 @@ class SignupPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                hintText: 'Enter your name',
+                border: OutlineInputBorder(),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(width: 0.3),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: emailController,
               decoration: const InputDecoration(
@@ -51,7 +94,7 @@ class SignupPage extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             GestureDetector(
-              onTap: () {},
+              onTap: register,
               child: Container(
                 height: 60,
                 padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -72,12 +115,22 @@ class SignupPage extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () => context.go('/login'),
+              onPressed: () {
+                widget.onTap!();
+              },
               child: const Text('Login'),
             )
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
   }
 }

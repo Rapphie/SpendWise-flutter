@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_cubit.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final void Function()? onTap;
+  const LoginPage({super.key, required this.onTap});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -20,7 +20,15 @@ class _LoginPageState extends State<LoginPage> {
     final authCubit = context.read<AuthCubit>();
     if (email.isNotEmpty && password.isNotEmpty) {
       authCubit.login(email: email, password: password);
+    } else {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Please fill all fields!')));
     }
+  }
+
+  void loginWithGoogle() {
+    final authCubit = context.read<AuthCubit>();
+    authCubit.loginWithGoogle();
   }
 
   @override
@@ -55,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 16),
               GestureDetector(
-                onTap: () {},
+                onTap: login,
                 child: Container(
                   height: 60,
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -76,9 +84,32 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               ElevatedButton(
-                onPressed: () => context.go('/signup'),
-                child: const Text('Sign up'),
-              )
+                onPressed: loginWithGoogle,
+                child: Container(
+                  height: 60,
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Google",
+                      style: TextStyle(
+                        color: Colors.blueAccent,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  widget.onTap!();
+                },
+                child: const Text('Sign ups cuh'),
+              ),
             ],
           ),
         ),
