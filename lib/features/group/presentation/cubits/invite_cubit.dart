@@ -13,7 +13,7 @@ class GroupInviteCubit extends Cubit<GroupInviteState> {
       await inviteRepo.sendInvite(groupUid: groupUid, userEmail: userEmail);
       emit(GroupInviteSent(message: "Successfully invited $userEmail to the group."));
     } catch (e) {
-      emit(GroupInviteError(message: 'Failed to send invite: $e'));
+      emit(GroupInviteError(message: e.toString()));
     }
   }
 

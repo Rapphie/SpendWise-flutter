@@ -1,10 +1,11 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 import 'group_states.dart';
 
 class GroupCubit extends Cubit<GroupState> {
   final GroupRepository groupRepo;
-
+  AppGroup? selectedGroup; 
   GroupCubit({required this.groupRepo}) : super(GroupInitial());
 
   Future<void> createGroup({required String name}) async {
@@ -22,7 +23,15 @@ class GroupCubit extends Cubit<GroupState> {
     try {
       emit(GroupLoading());
       final groups = await groupRepo.getUserGroups();
-      emit(GroupsLoaded(groups: groups));
+      if (groups.isNotEmpty) {
+        selectedGroup = groups.firstWhere(
+          (group) => group.name == 'Personal',
+          orElse: () => groups.first,
+        );
+      } else {
+        selectedGroup = null;
+      }
+      emit(GroupsLoaded(groups: groups, selectedGroup: selectedGroup!));
     } catch (e) {
       emit(GroupError(message: 'Error: $e'));
     }
@@ -59,7 +68,27 @@ class GroupCubit extends Cubit<GroupState> {
     }
   }
 
+  Future<void> addCategory({required String groupUid, required String categoryName}) async {
+    try {
+      emit(GroupLoading());
+      await groupRepo.createCategory(groupUid: groupUid, categoryName: categoryName);
+      emit(GroupUpdated(message: 'Category added successfully!'));
+      // Reload groups to update the UI
+      await loadUserGroups();
+    } catch (e) {
+      emit(GroupError(message: 'Failed to add category: $e'));
+    }
+  }
+
   void clearGroups() {
-    emit(GroupsLoaded(groups: []));
+    emit(GroupsLoaded(groups: [], selectedGroup: null));
+  }
+
+  void setSelectedGroup(AppGroup group) {
+    selectedGroup = group;
+    if (state is GroupsLoaded) {
+      final currentState = state as GroupsLoaded;
+      emit(GroupsLoaded(groups: currentState.groups, selectedGroup: group));
+    }
   }
 }

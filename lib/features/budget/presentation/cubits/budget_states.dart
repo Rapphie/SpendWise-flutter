@@ -1,45 +1,33 @@
-import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
-import 'package:spend_wise/features/group/domain/entities/app_group.dart';
+import 'package:spend_wise/features/budget/domain/entities/app_budget.dart';
 
-abstract class AuthState {}
 
-class AuthInitial extends AuthState {}
+abstract class BudgetState {}
 
-class AuthLoading extends AuthState {}
+class BudgetInitial extends BudgetState {}
 
-class Authenticated extends AuthState {
-  final AppUser user;
-  Authenticated({required this.user});
-}
+class BudgetLoading extends BudgetState {}
 
-class Unauthenticated extends AuthState {}
-
-class AuthFailure extends AuthState {
+class BudgetCreated extends BudgetState {
   final String message;
-  AuthFailure({required this.message});
+  BudgetCreated({required this.message});
 }
 
-abstract class GroupState {}
-
-class GroupInitial extends GroupState {}
-
-class GroupLoading extends GroupState {}
-
-class GroupCreated extends GroupState {
-  final AppGroup group;
-  GroupCreated({required this.group});
+class BudgetsLoaded extends BudgetState {
+  final List<AppBudget> budgets;
+  BudgetsLoaded({required this.budgets});
 }
 
-class GroupsLoaded extends GroupState {
-  final List<AppGroup> groups;
-  GroupsLoaded({required this.groups});
-}
-
-class GroupInviteSent extends GroupState {}
-
-class GroupInviteAccepted extends GroupState {}
-
-class GroupError extends GroupState {
+class BudgetUpdated extends BudgetState {
   final String message;
-  GroupError({required this.message});
+  BudgetUpdated({required this.message});
+}
+
+class BudgetDeleted extends BudgetState {
+  final String message;
+  BudgetDeleted({required this.message});
+}
+
+class BudgetError extends BudgetState {
+  final String message;
+  BudgetError({required this.message});
 }

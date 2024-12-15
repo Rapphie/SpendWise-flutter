@@ -5,6 +5,9 @@ import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dar
 import 'package:spend_wise/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_states.dart';
 import 'package:spend_wise/features/auth/presentation/pages/auth_page.dart';
+import 'package:spend_wise/features/budget/data/budget_repo_impl.dart';
+import 'package:spend_wise/features/budget/domain/repositories/budget_repository.dart';
+import 'package:spend_wise/features/budget/presentation/cubits/budget_cubit.dart';
 import 'package:spend_wise/features/group/data/group_repo_impl.dart';
 import 'package:spend_wise/features/group/data/invite_repo_impl.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
@@ -14,7 +17,7 @@ import 'package:spend_wise/features/group/presentation/cubits/invite_cubit.dart'
 import 'package:spend_wise/features/home/presentation/pages/home_page.dart';
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +32,10 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<AuthRepository>(
           create: (context) => AuthRepoImpl(),
         ),
+        RepositoryProvider<BudgetRepository>(
+          // Added BudgetRepository
+          create: (context) => BudgetRepoImpl(),
+        ),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -42,6 +49,10 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (context) =>
                 GroupInviteCubit(inviteRepo: context.read<InviteRepository>())..loadInvites(),
+          ),
+          BlocProvider(
+            // Added BudgetCubit
+            create: (context) => BudgetCubit(budgetRepo: context.read<BudgetRepository>()),
           ),
         ],
         child: MaterialApp(
@@ -66,10 +77,10 @@ class MyApp extends StatelessWidget {
                 ));
               }
               if (state is AuthFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.redAccent,
-                ));
+                // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                //   content: Text(state.message),
+                //   backgroundColor: Colors.redAccent,
+                // ));
               }
             },
           ),

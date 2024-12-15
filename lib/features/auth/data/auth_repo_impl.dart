@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -18,11 +17,13 @@ class AuthRepoImpl implements AuthRepository {
         email: email,
         password: password,
       );
-
+      DocumentSnapshot userRef =
+          await firebasefirestore.collection('users').doc(_firebaseAuth.currentUser!.uid).get();
+      String userName = userRef['name'];
       AppUser user = AppUser(
         uid: userCredential.user!.uid,
         email: email,
-        name: '',
+        name: userName,
         groups: [],
         createdOn: null,
         updatedOn: null,
@@ -138,11 +139,13 @@ class AuthRepoImpl implements AuthRepository {
     if (firebaseUser == null) {
       return null;
     }
-
+    DocumentSnapshot userRef =
+        await firebasefirestore.collection('users').doc(firebaseUser.uid).get();
+    String userName = userRef['name'];
     return AppUser(
       uid: firebaseUser.uid,
       email: firebaseUser.email!,
-      name: '',
+      name: userName,
       groups: [],
     );
   }

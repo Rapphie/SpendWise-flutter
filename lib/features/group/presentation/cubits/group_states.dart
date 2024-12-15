@@ -14,7 +14,9 @@ class GroupCreated extends GroupState {
 
 class GroupsLoaded extends GroupState {
   final List<AppGroup> groups;
-  GroupsLoaded({required this.groups});
+  final AppGroup? selectedGroup; // Add this field
+
+  GroupsLoaded({required this.groups, required this.selectedGroup});
 }
 
 class GroupUpdated extends GroupState {

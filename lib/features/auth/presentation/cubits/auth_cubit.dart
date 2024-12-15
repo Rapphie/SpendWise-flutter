@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_states.dart';
+import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
 
 class AuthCubit extends Cubit<AuthState> {
   AuthCubit({required this.authRepo}) : super(AuthInitial());
@@ -30,6 +31,8 @@ class AuthCubit extends Cubit<AuthState> {
       if (user != null) {
         _currentUser = user;
         emit(Authenticated(user: user, message: 'Successfully logged in as ${user.email}.'));
+        // Removed redundant loadUserGroups
+        // context.read<GroupCubit>().loadUserGroups();
       } else {
         emit(AuthFailure(message: 'Failed to login.'));
         emit(Unauthenticated());
@@ -100,4 +103,5 @@ class AuthCubit extends Cubit<AuthState> {
     authRepo.logout();
     emit(Unauthenticated());
   }
+
 }

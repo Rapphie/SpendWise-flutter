@@ -71,14 +71,14 @@ class GroupPage extends StatelessWidget {
   }
 
   void _showCreateGroupDialog(BuildContext context) {
-    final TextEditingController _groupNameController = TextEditingController();
+    final TextEditingController groupNameController = TextEditingController();
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: const Text('Create Group'),
           content: TextField(
-            controller: _groupNameController,
+            controller: groupNameController,
             decoration: const InputDecoration(hintText: 'Enter group name'),
           ),
           actions: [
@@ -90,12 +90,10 @@ class GroupPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                final groupName = _groupNameController.text.trim();
+                final groupName = groupNameController.text.trim();
                 if (groupName.isNotEmpty) {
-                  context.read<GroupCubit>().createGroup(name: groupName).then((_) {
-                    context.read<GroupCubit>().loadUserGroups();
-                    Navigator.of(context).pop();
-                  });
+                  context.read<GroupCubit>().createGroup(name: groupName);
+                 Navigator.of(context).pop();
                 }
               },
               child: const Text('Create'),
