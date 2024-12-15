@@ -29,7 +29,7 @@ class InvitesPage extends StatelessWidget {
                 final invite = invites[index];
                 return ListTile(
                   title: Text('Group: ${invite.groupName}'),
-                  subtitle: Text('Invited by: ${invite.senderUid}'),
+                  subtitle: Text('Invited by: ${invite.senderName}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

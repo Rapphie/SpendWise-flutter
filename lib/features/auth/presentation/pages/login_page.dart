@@ -21,8 +21,10 @@ class _LoginPageState extends State<LoginPage> {
     if (email.isNotEmpty && password.isNotEmpty) {
       authCubit.login(email: email, password: password);
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please fill all fields!')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('Please fill all fields!'),
+        backgroundColor: Colors.redAccent,
+      ));
     }
   }
 

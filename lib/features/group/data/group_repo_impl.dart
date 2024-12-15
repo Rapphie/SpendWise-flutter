@@ -20,7 +20,9 @@ class GroupRepoImpl implements GroupRepository {
           name: name,
           ownerId: currentUserUid,
           memberList: [currentUserUid],
-          categoryList: []);
+          categoryList: [],
+          createdOn: Timestamp.now(),
+          updatedOn: Timestamp.now());
       await firebasefirestore.collection('groups').doc(group.uid).set(group.toJson());
       return group;
     } catch (e) {
@@ -41,24 +43,28 @@ class GroupRepoImpl implements GroupRepository {
   }
 
   @override
-  Future<List<AppUser>?> getMembers({required String groupUid}) async {
+  Future<List<AppUser>> getMembers({required String groupUid}) async {
     try {
       DocumentSnapshot groupDoc = await firebasefirestore.collection('groups').doc(groupUid).get();
       if (groupDoc.exists) {
-        List<dynamic> memberIds = groupDoc.get('memberList');
+        List<dynamic> memberIds = groupDoc.get('memberList') ?? [];
         List<AppUser> members = [];
         for (var memberId in memberIds) {
           DocumentSnapshot userDoc =
               await firebasefirestore.collection('users').doc(memberId as String).get();
           if (userDoc.exists) {
             members.add(AppUser.fromJson(userDoc.data() as Map<String, dynamic>));
+          } else {
+            print('User document not found for ID: $memberId');
           }
         }
         return members;
       } else {
-        return null;
+        print('Group document does not exist for ID: $groupUid');
+        return [];
       }
     } catch (e) {
+      print('Failed to get members: $e');
       throw Exception('Failed to get members: $e');
     }
   }

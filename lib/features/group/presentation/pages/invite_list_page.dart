@@ -27,7 +27,7 @@ class InviteListPage extends StatelessWidget {
                 final invite = snapshot.data![index];
                 return ListTile(
                   title: Text(invite.groupName),
-                  subtitle: Text('Invited by ${invite.senderUid}'),
+                  subtitle: Text('Invited by ${invite.senderName}'),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

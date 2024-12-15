@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
-import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
-import 'package:spend_wise/features/group/domain/entities/group_invite.dart';
+import 'package:spend_wise/features/group/presentation/cubits/group_states.dart';
 import 'package:spend_wise/features/group/presentation/cubits/invite_cubit.dart';
 
 class GroupDetailPage extends StatelessWidget {
@@ -15,7 +14,8 @@ class GroupDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GroupCubit(groupRepository: context.read<GroupRepository>()),
+      create: (context) =>
+          GroupCubit(groupRepo: context.read<GroupRepository>())..getMembers(groupUid: group.uid),
       child: Scaffold(
         appBar: AppBar(
           title: Text(group.name),
@@ -29,39 +29,35 @@ class GroupDetailPage extends StatelessWidget {
             ),
           ],
         ),
-        body: Column(
-          children: [
-            // Display group members
-            Expanded(
-              child: FutureBuilder(
-                future: context.read<GroupRepository>().getMembers(groupUid: group.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasData) {
-                    final members = snapshot.data as List<AppUser>;
-                    return ListView.builder(
-                      itemCount: members.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(members[index].name),
-                        );
-                      },
-                    );
-                  } else {
-                    return const Center(child: Text('No members found.'));
-                  }
+        body: BlocBuilder<GroupCubit, GroupState>(
+          builder: (context, state) {
+            if (state is GroupLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is GroupMembersLoaded) {
+              final members = state.members;
+              if (members.isEmpty) {
+                return const Center(child: Text('No members found.'));
+              }
+              return ListView.builder(
+                itemCount: members.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(members[index]!.name),
+                  );
                 },
-              ),
-            ),
-            // Invite member button
-            ElevatedButton(
-              onPressed: () {
-                _showInviteDialog(context, group.uid);
-              },
-              child: const Text('Invite Member'),
-            ),
-          ],
+              );
+            } else if (state is GroupError) {
+              return Center(child: Text(state.message));
+            } else {
+              return const Center(child: Text('No members found.'));
+            }
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            _showInviteDialog(context, group.uid);
+          },
+          child: const Icon(Icons.add),
         ),
       ),
     );
@@ -91,12 +87,12 @@ class GroupDetailPage extends StatelessWidget {
                 if (userEmail.isNotEmpty) {
                   context
                       .read<GroupInviteCubit>()
-                      .sendInvite(groupUid: groupUid, memberUid: userEmail);
+                      .sendInvite(groupUid: groupUid, userEmail: userEmail);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Invite sent successfully'),
-                      backgroundColor: Colors.greenAccent,
+                      backgroundColor: Colors.green,
                     ),
                   );
                 }

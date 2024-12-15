@@ -1,6 +1,5 @@
 import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/group/domain/entities/app_group.dart';
-import 'package:spend_wise/features/group/domain/entities/group_invite.dart';
 
 abstract class GroupRepository {
   Future<AppGroup> createGroup({required String name});

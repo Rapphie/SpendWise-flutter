@@ -1,3 +1,4 @@
+import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 
 abstract class GroupState {}
@@ -7,8 +8,8 @@ class GroupInitial extends GroupState {}
 class GroupLoading extends GroupState {}
 
 class GroupCreated extends GroupState {
-  final AppGroup group;
-  GroupCreated({required this.group});
+  final String message;
+  GroupCreated({required this.message});
 }
 
 class GroupsLoaded extends GroupState {
@@ -24,4 +25,9 @@ class GroupUpdated extends GroupState {
 class GroupError extends GroupState {
   final String message;
   GroupError({required this.message});
+}
+
+class GroupMembersLoaded extends GroupState {
+  final List<AppUser?> members;
+  GroupMembersLoaded({required this.members});
 }

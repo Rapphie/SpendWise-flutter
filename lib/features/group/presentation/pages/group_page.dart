@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
-import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_states.dart';
 import 'package:spend_wise/features/group/presentation/pages/group_detail_page.dart';
 import 'package:spend_wise/features/group/presentation/pages/invites_page.dart';
@@ -34,6 +33,9 @@ class GroupPage extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is GroupsLoaded) {
             final groups = state.groups;
+            if (groups.isEmpty) {
+              return const Center(child: Text('No groups found.'));
+            }
             return ListView.builder(
               itemCount: groups.length,
               itemBuilder: (context, index) {
@@ -60,9 +62,47 @@ class GroupPage extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          _showCreateGroupDialog(context);
+        },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  void _showCreateGroupDialog(BuildContext context) {
+    final TextEditingController _groupNameController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Create Group'),
+          content: TextField(
+            controller: _groupNameController,
+            decoration: const InputDecoration(hintText: 'Enter group name'),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                final groupName = _groupNameController.text.trim();
+                if (groupName.isNotEmpty) {
+                  context.read<GroupCubit>().createGroup(name: groupName).then((_) {
+                    context.read<GroupCubit>().loadUserGroups();
+                    Navigator.of(context).pop();
+                  });
+                }
+              },
+              child: const Text('Create'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

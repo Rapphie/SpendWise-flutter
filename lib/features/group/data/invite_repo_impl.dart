@@ -1,27 +1,40 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/group/domain/entities/group_invite.dart';
 import 'package:spend_wise/features/group/domain/repositories/invite_repository.dart';
 
 class InviteRepoImpl implements InviteRepository {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final String currentUserUid = FirebaseAuth.instance.currentUser!.uid;
 
-  @override
-  Future<void> sendInvite({required String groupUid, required String memberUid}) async {
-    String inviteId = firestore.collection('groups').doc().id;
+  Future<String> _getCurrentUserName() async {
+    DocumentSnapshot userDoc = await firestore.collection('users').doc(currentUserUid).get();
+    return userDoc.get('name');
+  }
 
+  @override
+  Future<void> sendInvite({required String groupUid, required String userEmail}) async {
+    String inviteId = firestore.collection('groups').doc().id;
     DocumentSnapshot groupRef = await firestore.collection('groups').doc(groupUid).get();
+    String memberUid =
+        (await firestore.collection('users').where('email', isEqualTo: userEmail).get())
+            .docs
+            .first
+            .id;
+
     String groupName = groupRef.get('name');
+    String senderName = await _getCurrentUserName();
     final invite = GroupInvite(
         id: inviteId,
         groupUid: groupUid,
         groupName: groupName,
-        senderUid: currentUserUid,
+        senderName: senderName,
         receiverUid: memberUid,
         status: 'pending',
         sentOn: Timestamp.now());
-        
+
     await firestore.collection('invites').doc(invite.id).set(invite.toJson());
   }
 
@@ -34,15 +47,13 @@ class InviteRepoImpl implements InviteRepository {
       await firestore.collection('groups').doc(groupUid).update({
         'members': FieldValue.arrayUnion([currentUserUid]),
       });
-      await inviteRef.update({'status': 'accepted'});
+      await inviteRef.delete();
     }
   }
 
   @override
   Future<void> declineInvite({required String inviteUid}) async {
-    await firestore.collection('invites').doc(inviteUid).update({
-      'status': 'declined',
-    });
+    await firestore.collection('invites').doc(inviteUid).delete();
   }
 
   @override
@@ -58,7 +69,7 @@ class InviteRepoImpl implements InviteRepository {
         id: doc.id,
         groupUid: doc.get('groupUid'),
         groupName: doc.get('groupName'),
-        senderUid: doc.get('senderUid'),
+        senderName: doc.get('senderUid'),
         receiverUid: doc.get('receiverUid'),
         status: doc.get('status'),
         sentOn: doc.get('sentOn'),

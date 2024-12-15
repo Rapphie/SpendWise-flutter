@@ -2,7 +2,10 @@ import 'package:spend_wise/features/group/domain/entities/group_invite.dart';
 
 abstract class GroupInviteState {}
 
-class GroupInviteSent extends GroupInviteState {}
+class GroupInviteSent extends GroupInviteState {
+  final String message;
+  GroupInviteSent({required this.message});
+}
 
 class InvitesLoading extends GroupInviteState {}
 

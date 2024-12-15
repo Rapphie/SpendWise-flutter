@@ -4,10 +4,9 @@ import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dar
 import 'package:spend_wise/features/auth/presentation/cubits/auth_states.dart';
 
 class AuthCubit extends Cubit<AuthState> {
+  AuthCubit({required this.authRepo}) : super(AuthInitial());
   final AuthRepository authRepo;
   AppUser? _currentUser;
-
-  AuthCubit({required this.authRepo}) : super(AuthInitial());
 
   void checkAuth() async {
     emit(AuthLoading());
@@ -36,14 +35,15 @@ class AuthCubit extends Cubit<AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
-      String message = '';
+      String message = 'Unknown error. Please try again.';
       if (e.toString().contains('invalid-email')) {
         message = 'Invalid email address.';
       } else if (e.toString().contains('invalid-credential')) {
         message = 'Incorrect email or password.';
-      } else {
-        message = 'Unknown error. Please try again.';
+      } else if (e.toString().contains('ssl')) {
+        message = 'SSL connection error. Please check your network connection.';
       }
+      print('Login error: $e'); // Add detailed logging
       emit(AuthFailure(message: message));
       emit(Unauthenticated());
     }
@@ -61,6 +61,7 @@ class AuthCubit extends Cubit<AuthState> {
         emit(Unauthenticated());
       }
     } catch (e) {
+      print('Google login error: $e'); // Add detailed logging
       emit(AuthFailure(message: 'Error: $e'));
       emit(Unauthenticated());
     }
@@ -83,12 +84,13 @@ class AuthCubit extends Cubit<AuthState> {
       if (e.toString().contains('invalid-email')) {
         message = 'Invalid email address.';
       } else if (e.toString().contains('weak-password')) {
-        message = 'Minimum passowrd length is 6 characters.';
+        message = 'Minimum password length is 6 characters.';
       } else if (e.toString().contains('email-already-in-use')) {
         message = 'Email is already in use.';
       } else {
         message = 'Unknown error. Please try again.';
       }
+      print('Registration error: $e'); // Add detailed logging
       emit(AuthFailure(message: message));
       emit(Unauthenticated());
     }

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
@@ -15,9 +14,12 @@ class CreateGroupPage extends StatelessWidget {
       listener: (context, state) {
         if (state is GroupCreated) {
           Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message), backgroundColor: Colors.green),
+          );
         } else if (state is GroupError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
           );
         }
       },

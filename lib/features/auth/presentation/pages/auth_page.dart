@@ -3,7 +3,6 @@ import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 
 import 'package:spend_wise/features/auth/presentation/pages/toggle_login_register.dart';
 import 'package:spend_wise/features/home/presentation/pages/home_page.dart';
-import 'package:spend_wise/features/home/presentation/pages/home_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});

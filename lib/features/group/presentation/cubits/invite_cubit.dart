@@ -7,15 +7,16 @@ class GroupInviteCubit extends Cubit<GroupInviteState> {
 
   GroupInviteCubit({required this.inviteRepo}) : super(InvitesLoading());
 
-  Future<void> sendInvite({required String groupUid, required String memberUid}) async {
+  Future<void> sendInvite({required String groupUid, required String userEmail}) async {
     try {
       emit(InvitesLoading());
-      await inviteRepo.sendInvite(groupUid: groupUid, memberUid: memberUid);
-      emit(GroupInviteSent());
+      await inviteRepo.sendInvite(groupUid: groupUid, userEmail: userEmail);
+      emit(GroupInviteSent(message: "Successfully invited $userEmail to the group."));
     } catch (e) {
       emit(GroupInviteError(message: 'Failed to send invite: $e'));
     }
   }
+
   Future<void> loadInvites() async {
     try {
       emit(InvitesLoading());
@@ -44,5 +45,9 @@ class GroupInviteCubit extends Cubit<GroupInviteState> {
     } catch (e) {
       emit(GroupInviteError(message: 'Failed to decline invite: $e'));
     }
+  }
+
+  void clearInvites() {
+    emit(InvitesLoaded(invites: []));
   }
 }
