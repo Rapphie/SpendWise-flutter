@@ -1,6 +1,5 @@
 import 'package:spend_wise/features/budget/domain/entities/app_budget.dart';
 
-
 abstract class BudgetState {}
 
 class BudgetInitial extends BudgetState {}

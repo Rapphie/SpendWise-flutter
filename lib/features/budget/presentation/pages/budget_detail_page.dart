@@ -76,11 +76,13 @@ class BudgetDetailPage extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                final newName = nameController.text.trim();
                 final newAmount = double.tryParse(amountController.text.trim()) ?? budget.amount;
-                if (newName.isNotEmpty && newAmount > 0) {
+                if (newAmount > 0) {
                   context.read<BudgetCubit>().updateBudget(
-                      uid: budget.uid, groupId: budget.groupId, amount: newAmount);
+                      uid: budget.uid,
+                      groupId: budget.groupId,
+                      categoryName: budget.categoryName, // Pass the new category name
+                      amount: newAmount);
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(

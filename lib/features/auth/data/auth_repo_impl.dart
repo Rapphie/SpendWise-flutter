@@ -17,8 +17,10 @@ class AuthRepoImpl implements AuthRepository {
         email: email,
         password: password,
       );
-      DocumentSnapshot userRef =
-          await firebasefirestore.collection('users').doc(_firebaseAuth.currentUser!.uid).get();
+      DocumentSnapshot userRef = await firebasefirestore
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
       String userName = userRef['name'];
       AppUser user = AppUser(
         uid: userCredential.user!.uid,
@@ -134,20 +136,18 @@ class AuthRepoImpl implements AuthRepository {
 
   @override
   Future<AppUser?> getCurrentUser() async {
-    final firebaseUser = _firebaseAuth.currentUser;
-
-    if (firebaseUser == null) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot userDoc =
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        return AppUser.fromJson(userDoc.data() as Map<String, dynamic>);
+      } else {
+        return AppUser(uid: user.uid, name: user.displayName ?? '', email: user.email ?? '', groups: []);
+      }
+    } else {
       return null;
     }
-    DocumentSnapshot userRef =
-        await firebasefirestore.collection('users').doc(firebaseUser.uid).get();
-    String userName = userRef['name'];
-    return AppUser(
-      uid: firebaseUser.uid,
-      email: firebaseUser.email!,
-      name: userName,
-      groups: [],
-    );
   }
 
   @override

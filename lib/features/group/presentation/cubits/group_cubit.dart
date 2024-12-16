@@ -5,7 +5,7 @@ import 'group_states.dart';
 
 class GroupCubit extends Cubit<GroupState> {
   final GroupRepository groupRepo;
-  AppGroup? selectedGroup; 
+  AppGroup? selectedGroup;
   GroupCubit({required this.groupRepo}) : super(GroupInitial());
 
   Future<void> createGroup({required String name}) async {
@@ -16,6 +16,18 @@ class GroupCubit extends Cubit<GroupState> {
       await loadUserGroups();
     } catch (e) {
       emit(GroupError(message: 'Error: $e'));
+    }
+  }
+
+  Future<void> addCategory({required String groupUid, required String categoryName}) async {
+    try {
+      emit(GroupLoading());
+      await groupRepo.createCategory(groupUid: groupUid, categoryName: categoryName);
+      emit(GroupUpdated(message: 'Category added successfully!'));
+      // Reload groups to update the UI
+      await loadUserGroups();
+    } catch (e) {
+      emit(GroupError(message: 'Failed to add category: $e'));
     }
   }
 
@@ -31,7 +43,8 @@ class GroupCubit extends Cubit<GroupState> {
       } else {
         selectedGroup = null;
       }
-      emit(GroupsLoaded(groups: groups, selectedGroup: selectedGroup!));
+      emit(GroupsLoaded(
+          groups: groups, selectedGroup: selectedGroup)); // Changed from null to selectedGroup
     } catch (e) {
       emit(GroupError(message: 'Error: $e'));
     }
@@ -41,7 +54,6 @@ class GroupCubit extends Cubit<GroupState> {
     try {
       emit(GroupLoading());
       await groupRepo.deleteGroup(groupUid: groupUid);
-      // Optionally, reload the list of groups
       await loadUserGroups();
     } catch (e) {
       emit(GroupError(message: 'Failed to delete group: $e'));
@@ -68,20 +80,23 @@ class GroupCubit extends Cubit<GroupState> {
     }
   }
 
-  Future<void> addCategory({required String groupUid, required String categoryName}) async {
+  Future<List<String>?> getCategories({required String groupUid}) async {
     try {
       emit(GroupLoading());
-      await groupRepo.createCategory(groupUid: groupUid, categoryName: categoryName);
-      emit(GroupUpdated(message: 'Category added successfully!'));
-      // Reload groups to update the UI
-      await loadUserGroups();
+      final categories = await groupRepo.getCategories(groupUid: groupUid);
+      return categories!.cast<String>().toList();
     } catch (e) {
-      emit(GroupError(message: 'Failed to add category: $e'));
+      emit(GroupError(message: 'Failed to load group members: $e'));
     }
+    return null;
   }
 
   void clearGroups() {
     emit(GroupsLoaded(groups: [], selectedGroup: null));
+  }
+
+  void clearMembers() {
+    emit(GroupMembersLoaded(members: []));
   }
 
   void setSelectedGroup(AppGroup group) {

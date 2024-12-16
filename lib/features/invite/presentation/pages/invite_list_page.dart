@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:spend_wise/features/group/domain/entities/group_invite.dart';
-import 'package:spend_wise/features/group/data/invite_repo_impl.dart';
+import 'package:spend_wise/features/invite/domain/entities/group_invite.dart';
+import 'package:spend_wise/features/invite/data/invite_repo_impl.dart';
 
 class InviteListPage extends StatelessWidget {
   const InviteListPage({super.key});

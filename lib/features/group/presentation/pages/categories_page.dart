@@ -18,7 +18,7 @@ class CategoriesPage extends StatelessWidget {
         builder: (context, state) {
           if (state is GroupsLoaded) {
             return FutureBuilder<List<String>>(
-              future: context.read<GroupCubit>().groupRepo.getCategories(groupUid: groupId),
+              future: context.read<GroupCubit>().groupRepo.getCategories(groupUid: groupId).then((value) => value ?? []),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());

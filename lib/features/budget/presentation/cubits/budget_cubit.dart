@@ -1,6 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/budget/domain/repositories/budget_repository.dart';
 import 'budget_states.dart';
 
@@ -14,17 +12,20 @@ class BudgetCubit extends Cubit<BudgetState> {
     try {
       emit(BudgetLoading());
       await budgetRepo.createBudget(groupId: groupId, categoryName: name, amount: amount);
-      emit(BudgetCreated(message: 'Budget created successfully!'));
+      emit(BudgetCreated(message: 'Budget created successfully!')); // Emits BudgetCreated
       await loadBudgets(groupId: groupId);
+      emit(BudgetInitial());
     } catch (e) {
-      emit(BudgetError(message: 'Failed to create budget: $e'));
+      emit(BudgetError(message: 'Failed to create budget: $e')); // Emits BudgetError
     }
   }
 
-  Future<void> updateBudget({required String uid, required String groupId, double? amount, String? categoryName}) async {
+  Future<void> updateBudget(
+      {required String uid, required String groupId, double? amount, String? categoryName}) async {
     try {
       emit(BudgetLoading());
-      await budgetRepo.updateBudget(uid: uid, groupId: groupId, amount: amount, categoryName: categoryName);
+      await budgetRepo.updateBudget(
+          uid: uid, groupId: groupId, amount: amount, categoryName: categoryName);
       emit(BudgetUpdated(message: 'Budget updated successfully!'));
       await loadBudgets(groupId: groupId);
     } catch (e) {

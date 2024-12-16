@@ -1,4 +1,4 @@
-import 'package:spend_wise/features/group/domain/entities/group_invite.dart';
+import 'package:spend_wise/features/invite/domain/entities/group_invite.dart';
 
 abstract class GroupInviteState {}
 
@@ -14,7 +14,10 @@ class InvitesLoaded extends GroupInviteState {
   InvitesLoaded({required this.invites});
 }
 
-class GroupInviteAccepted extends GroupInviteState {}
+class GroupInviteAccepted extends GroupInviteState {
+  final String message;
+  GroupInviteAccepted({required this.message});
+}
 
 class GroupInviteDeclined extends GroupInviteState {}
 

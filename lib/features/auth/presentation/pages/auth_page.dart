@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
-
-import 'package:spend_wise/features/auth/presentation/pages/toggle_login_register.dart';
-import 'package:spend_wise/features/home/presentation/pages/home_page.dart';
+import 'package:spend_wise/features/auth/presentation/pages/swipeable_screens.dart';
+import 'package:spend_wise/features/home/presentation/pages/my_home_page.dart';
 
 class AuthPage extends StatefulWidget {
   const AuthPage({super.key});
@@ -16,9 +15,9 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     if (_currentUser == null) {
-      return const ToggleLoginRegister();
+      return const OnboardingSwipeScreens();
     } else {
-      return const HomePage();
+      return const MyHomePage();
     }
   }
 }

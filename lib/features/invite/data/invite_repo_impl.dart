@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:spend_wise/features/group/domain/entities/group_invite.dart';
-import 'package:spend_wise/features/group/domain/repositories/invite_repository.dart';
+import 'package:spend_wise/features/invite/domain/entities/group_invite.dart';
+import 'package:spend_wise/features/invite/domain/repositories/invite_repository.dart';
 
 class InviteRepoImpl implements InviteRepository {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -57,7 +57,7 @@ class InviteRepoImpl implements InviteRepository {
     if (inviteSnapshot.exists) {
       String groupUid = inviteSnapshot.get('groupUid');
       await firestore.collection('groups').doc(groupUid).update({
-        'members': FieldValue.arrayUnion([currentUserUid]),
+        'memberList': FieldValue.arrayUnion([currentUserUid]),
       });
       await inviteRef.delete();
     }

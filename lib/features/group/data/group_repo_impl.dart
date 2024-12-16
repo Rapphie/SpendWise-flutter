@@ -6,20 +6,24 @@ import 'package:spend_wise/features/auth/domain/entities/app_user.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 
 class GroupRepoImpl implements GroupRepository {
-  final User? currentUser = FirebaseAuth.instance.currentUser;
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   final FirebaseFirestore firebasefirestore = FirebaseFirestore.instance;
-
-  String get currentUserUid => currentUser!.uid;
 
   @override
   Future<AppGroup> createGroup({required String name}) async {
     try {
+      final currentUser = _firebaseAuth.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user signed in');
+      }
       final group = AppGroup(
           uid: firebasefirestore.collection('groups').doc().id,
           name: name,
-          ownerId: currentUserUid,
-          memberList: [currentUserUid],
+          ownerId: currentUser.uid,
+          memberList: [
+            currentUser.uid,
+          ],
           categoryList: [],
           createdOn: Timestamp.now(),
           updatedOn: Timestamp.now());
@@ -58,6 +62,23 @@ class GroupRepoImpl implements GroupRepository {
   Future<void> deleteGroup({required String groupUid}) async {
     try {
       await firebasefirestore.collection('groups').doc(groupUid).delete();
+      final budgetSnapshot = await firebasefirestore
+          .collection('budgets')
+          .where('groupId', isEqualTo: groupUid)
+          .get();
+      final usersSnapshot = await firebasefirestore
+        .collection('users')
+        .where('groups', arrayContains: groupUid)
+        .get();
+      for (var userDoc in usersSnapshot.docs) {
+        await userDoc.reference.update({
+          'groups': FieldValue.arrayRemove([groupUid]),
+        });
+      }
+      for (var doc in budgetSnapshot.docs) {
+        await firebasefirestore.collection('budgets').doc(doc.id).delete();
+      }
+
     } catch (e) {
       throw Exception('Failed to delete group: $e');
     }
@@ -66,9 +87,13 @@ class GroupRepoImpl implements GroupRepository {
   @override
   Future<List<AppGroup>> getUserGroups() async {
     try {
+      final currentUser = _firebaseAuth.currentUser;
+      if (currentUser == null) {
+        throw Exception('No user is currently signed in.');
+      }
       QuerySnapshot groupSnapshot = await firebasefirestore
           .collection('groups')
-          .where('memberList', arrayContains: currentUser!.uid)
+          .where('memberList', arrayContains: currentUser.uid)
           .get();
 
       List<AppGroup> groups = groupSnapshot.docs.map((doc) {
@@ -109,7 +134,7 @@ class GroupRepoImpl implements GroupRepository {
   }
 
   @override
-  Future<List<String>> getCategories({required String groupUid}) async {
+  Future<List<String>?> getCategories({required String groupUid}) async {
     try {
       DocumentSnapshot groupDoc = await firebasefirestore.collection('groups').doc(groupUid).get();
       if (groupDoc.exists) {

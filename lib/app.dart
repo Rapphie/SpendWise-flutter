@@ -5,16 +5,20 @@ import 'package:spend_wise/features/auth/domain/repositories/auth_repository.dar
 import 'package:spend_wise/features/auth/presentation/cubits/auth_cubit.dart';
 import 'package:spend_wise/features/auth/presentation/cubits/auth_states.dart';
 import 'package:spend_wise/features/auth/presentation/pages/auth_page.dart';
+import 'package:spend_wise/features/auth/presentation/pages/signin_page.dart';
 import 'package:spend_wise/features/budget/data/budget_repo_impl.dart';
 import 'package:spend_wise/features/budget/domain/repositories/budget_repository.dart';
 import 'package:spend_wise/features/budget/presentation/cubits/budget_cubit.dart';
 import 'package:spend_wise/features/group/data/group_repo_impl.dart';
-import 'package:spend_wise/features/group/data/invite_repo_impl.dart';
+import 'package:spend_wise/features/home/presentation/pages/my_home_page.dart';
+import 'package:spend_wise/features/invite/data/invite_repo_impl.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
-import 'package:spend_wise/features/group/domain/repositories/invite_repository.dart';
+import 'package:spend_wise/features/invite/domain/repositories/invite_repository.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
-import 'package:spend_wise/features/group/presentation/cubits/invite_cubit.dart';
-import 'package:spend_wise/features/home/presentation/pages/home_page.dart';
+import 'package:spend_wise/features/invite/presentation/cubits/invite_cubit.dart';
+import 'package:spend_wise/features/expense/data/expense_repo_impl.dart';
+import 'package:spend_wise/features/expense/domain/repositories/expense_repository.dart';
+import 'package:spend_wise/features/expense/presentation/cubits/expense_cubit.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -33,8 +37,10 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthRepoImpl(),
         ),
         RepositoryProvider<BudgetRepository>(
-          // Added BudgetRepository
           create: (context) => BudgetRepoImpl(),
+        ),
+        RepositoryProvider<ExpenseRepository>(
+          create: (context) => ExpenseRepoImpl(),
         ),
       ],
       child: MultiBlocProvider(
@@ -54,6 +60,10 @@ class MyApp extends StatelessWidget {
             // Added BudgetCubit
             create: (context) => BudgetCubit(budgetRepo: context.read<BudgetRepository>()),
           ),
+          BlocProvider(
+            // Added ExpenseCubit
+            create: (context) => ExpenseCubit(expenseRepo: context.read<ExpenseRepository>()),
+          ),
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -62,9 +72,11 @@ class MyApp extends StatelessWidget {
               print(authState);
 
               if (authState is Authenticated) {
-                return const HomePage();
+                return const MyHomePage();
               } else if (authState is Unauthenticated) {
                 return const AuthPage();
+              } else if (authState is RegistrationSuccess) {
+                return const SigninPage();
               } else {
                 return const Scaffold(body: Center(child: CircularProgressIndicator()));
               }
@@ -76,11 +88,17 @@ class MyApp extends StatelessWidget {
                   backgroundColor: Colors.green,
                 ));
               }
+              if (state is RegistrationSuccess) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.green,
+                ));
+              }
               if (state is AuthFailure) {
-                // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                //   content: Text(state.message),
-                //   backgroundColor: Colors.redAccent,
-                // ));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.redAccent,
+                ));
               }
             },
           ),

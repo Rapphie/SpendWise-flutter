@@ -5,6 +5,7 @@ class AppBudget {
   final String groupId;
   final String categoryName;
   final double amount;
+  final String userId;
   final String createdBy;
   final String updatedBy;
   final Timestamp createdOn;
@@ -15,6 +16,7 @@ class AppBudget {
     required this.groupId,
     required this.categoryName,
     required this.amount,
+    required this.userId,
     required this.createdBy,
     required this.updatedBy,
     required this.createdOn,
@@ -27,6 +29,7 @@ class AppBudget {
       groupId: json['groupId'],
       categoryName: json['categoryName'],
       amount: json['amount'],
+      userId: json['userId'],
       createdBy: json['createdBy'],
       updatedBy: json['updatedBy'],
       createdOn: json['createdOn'],
@@ -40,6 +43,7 @@ class AppBudget {
       'groupId': groupId,
       'categoryName': categoryName,
       'amount': amount,
+      'userId': userId,
       'createdBy': createdBy,
       'updatedBy': updatedBy,
       'createdOn': createdOn,

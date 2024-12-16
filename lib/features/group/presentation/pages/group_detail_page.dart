@@ -4,10 +4,10 @@ import 'package:spend_wise/features/group/domain/entities/app_group.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
 import 'package:spend_wise/features/group/domain/repositories/group_repository.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_states.dart';
-import 'package:spend_wise/features/group/presentation/cubits/invite_cubit.dart';
+import 'package:spend_wise/features/invite/presentation/cubits/invite_cubit.dart';
 import 'package:spend_wise/features/budget/presentation/pages/budget_page.dart' as budget;
-import 'package:spend_wise/features/group/presentation/cubits/invite_states.dart';
 import 'package:spend_wise/features/group/presentation/pages/categories_page.dart';
+import 'package:spend_wise/features/invite/presentation/cubits/invite_states.dart';
 
 class GroupDetailPage extends StatelessWidget {
   final AppGroup group;
@@ -58,6 +58,7 @@ class GroupDetailPage extends StatelessWidget {
           body: BlocBuilder<GroupCubit, GroupState>(
             builder: (context, state) {
               if (state is GroupLoading) {
+                print(group.uid);
                 return const Center(child: CircularProgressIndicator());
               } else if (state is GroupMembersLoaded) {
                 final members = state.members;

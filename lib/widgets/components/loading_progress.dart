@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 class LoadingIndicatorDialog {
-  static final LoadingIndicatorDialog _singleton =
-      LoadingIndicatorDialog._internal();
+  static final LoadingIndicatorDialog _singleton = LoadingIndicatorDialog._internal();
   BuildContext? _context;
   bool isDisplayed = false;
 
@@ -18,7 +17,6 @@ class LoadingIndicatorDialog {
     }
     showDialog<void>(
       context: context,
-      barrierDismissible: false, // Prevent tapping outside to dismiss
       builder: (BuildContext context) {
         _context = context; // Save the correct context here
         isDisplayed = true;

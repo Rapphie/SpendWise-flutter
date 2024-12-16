@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_cubit.dart';
 import 'package:spend_wise/features/group/presentation/cubits/group_states.dart';
 import 'package:spend_wise/features/group/presentation/pages/group_detail_page.dart';
-import 'package:spend_wise/features/group/presentation/pages/invites_page.dart';
+import 'package:spend_wise/features/invite/presentation/pages/invites_page.dart';
 
 class GroupPage extends StatelessWidget {
   const GroupPage({super.key});
@@ -40,7 +40,7 @@ class GroupPage extends StatelessWidget {
               itemCount: groups.length,
               itemBuilder: (context, index) {
                 final group = groups[index];
-                print('The Group id is: ' + group.uid);
+                print('The Group id is: ${group.uid}');
                 return ListTile(
                   title: Text(group.name),
                   onTap: () {
@@ -93,7 +93,7 @@ class GroupPage extends StatelessWidget {
                 final groupName = groupNameController.text.trim();
                 if (groupName.isNotEmpty) {
                   context.read<GroupCubit>().createGroup(name: groupName);
-                 Navigator.of(context).pop();
+                  Navigator.of(context).pop();
                 }
               },
               child: const Text('Create'),
