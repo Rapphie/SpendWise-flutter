@@ -59,7 +59,7 @@ class ExpenseRepoImpl implements ExpenseRepository {
             updatedOn: Timestamp.now(),
           );
 
-          await firebasefirestore.collection('budgets').doc(budgetId).set(budget.toJson());
+          await firebasefirestore.collection('expenses').doc(budgetId).set(budget.toJson());
           return budget;
         } else {
           throw Exception('Category not found in the group');

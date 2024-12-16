@@ -15,6 +15,8 @@ import 'package:spend_wise/features/home/presentation/pages/report.dart';
 import 'package:spend_wise/features/invite/presentation/cubits/invite_cubit.dart';
 import 'package:spend_wise/features/home/data/home_repo_impl.dart';
 import 'package:spend_wise/utils/dateformatter.dart';
+import 'package:spend_wise/features/home/presentation/pages/all_recent_transactions_page.dart';
+import 'dart:math';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -251,10 +253,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     'Recent Transactions',
                     style: TextStyle(
                       fontSize: 20,
@@ -262,12 +264,21 @@ class _MyHomePageState extends State<MyHomePage> {
                       fontFamily: 'Montserrat',
                     ),
                   ),
-                  Text(
-                    '',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      fontFamily: 'Montserrat',
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AllRecentTransactionsPage(
+                                  userUid: userUid!,
+                                )),
+                      );
+                    },
+                    child: const Row(
+                      children: [
+                        Text('View All'),
+                        Icon(Icons.arrow_forward, size: 16),
+                      ],
                     ),
                   ),
                 ],
@@ -286,7 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     final transactions = snapshot.data!;
                     return ListView.builder(
                       shrinkWrap: true,
-                      itemCount: transactions.length,
+                      itemCount: min(5, transactions.length),
                       itemBuilder: (context, index) {
                         final transaction = transactions[index];
                         if (transaction is AppBudget) {
@@ -390,12 +401,36 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _showAddTransactionDialog(BuildContext context) {
+  Future<void> _showAddTransactionDialog(BuildContext context) async {
+    if (userUid == null ||
+        selectedCategory == null ||
+        context.read<GroupCubit>().selectedGroup == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please ensure you are logged in and a category is selected.'),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    double remainingBudget = await homeRepository.fetchSelectedBudgetRemaining(
+      userUid!,
+      context.read<GroupCubit>().selectedGroup!.uid,
+      selectedCategory!,
+    );
+
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Add Transaction'),
+          title: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Remaining budget for this category: Php ${remainingBudget.toStringAsFixed(2)}'),
+              const SizedBox(height: 10),
+            ],
+          ),
           content: const Text('Select the type of transaction:'),
           actions: [
             TextButton(
@@ -431,6 +466,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             TextButton(
               onPressed: () {
+                print("expense");
                 final groupCubit = context.read<GroupCubit>();
                 final amount = double.tryParse(amountController.text.trim()) ?? 0.0;
                 if (selectedCategory != null && amount > 0) {

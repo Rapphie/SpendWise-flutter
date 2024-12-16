@@ -50,4 +50,5 @@ class ExpenseCubit extends Cubit<ExpenseState> {
       emit(ExpenseError(message: 'Failed to load expenses: $e'));
     }
   }
+  
 }

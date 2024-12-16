@@ -43,4 +43,37 @@ class HomeRepoImpl implements HomeRepository {
         await _firestore.collection('expenses').where('userId', isEqualTo: userid).get();
     return snapshot.docs.map((doc) => AppExpense.fromJson(doc.data())).toList();
   }
+
+  Future<double> fetchSelectedBudgetRemaining(
+      String userId, String groupId, String categoryName) async {
+    // Calculate total budgets
+    final budgetSnapshot = await _firestore
+        .collection('budgets')
+        .where('userId', isEqualTo: userId)
+        .where('groupId', isEqualTo: groupId)
+        .where('categoryName', isEqualTo: categoryName)
+        .get();
+
+    double totalBudget = 0.0;
+    for (var doc in budgetSnapshot.docs) {
+      totalBudget += (doc.data()['amount'] ?? 0.0) as double;
+    }
+
+    // Calculate total expenses
+    final expenseSnapshot = await _firestore
+        .collection('expenses')
+        .where('userId', isEqualTo: userId)
+        .where('groupId', isEqualTo: groupId)
+        .where('categoryName', isEqualTo: categoryName)
+        .get();
+
+    double totalExpenses = 0.0;
+    for (var doc in expenseSnapshot.docs) {
+      totalExpenses += (doc.data()['amount'] ?? 0.0) as double;
+    }
+
+    // Compute remaining budget
+    double remaining = totalBudget - totalExpenses;
+    return remaining;
+  }
 }
