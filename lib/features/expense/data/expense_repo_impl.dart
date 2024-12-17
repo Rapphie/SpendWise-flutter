@@ -52,7 +52,7 @@ class ExpenseRepoImpl implements ExpenseRepository {
             groupId: groupId,
             categoryName: categoryName,
             amount: amount,
-            userId: currentUser!.uid,
+                userId: currentUser!.uid,
             createdBy: currentUser!.name,
             updatedBy: currentUser!.name,
             createdOn: Timestamp.now(),

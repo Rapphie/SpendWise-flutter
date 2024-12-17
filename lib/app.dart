@@ -65,42 +65,51 @@ class MyApp extends StatelessWidget {
             create: (context) => ExpenseCubit(expenseRepo: context.read<ExpenseRepository>()),
           ),
         ],
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          home: BlocConsumer<AuthCubit, AuthState>(
-            builder: (context, authState) {
-              print(authState);
+        child: BlocListener<AuthCubit, AuthState>(
+          listener: (context, state) {
+            if (state is Authenticated) {
+              const MyHomePage();
+            } else if (state is Unauthenticated) {
+              const AuthPage();
+            }
+          },
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: BlocConsumer<AuthCubit, AuthState>(
+              builder: (context, authState) {
+                print(authState);
 
-              if (authState is Authenticated) {
-                return const MyHomePage();
-              } else if (authState is Unauthenticated) {
-                return const AuthPage();
-              } else if (authState is RegistrationSuccess) {
-                return const SigninPage();
-              } else {
-                return const Scaffold(body: Center(child: CircularProgressIndicator()));
-              }
-            },
-            listener: (context, state) {
-              if (state is Authenticated) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.green,
-                ));
-              }
-              if (state is RegistrationSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.green,
-                ));
-              }
-              if (state is AuthFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.redAccent,
-                ));
-              }
-            },
+                if (authState is Authenticated) {
+                  return const MyHomePage();
+                } else if (authState is Unauthenticated) {
+                  return const AuthPage();
+                } else if (authState is RegistrationSuccess) {
+                  return const SigninPage();
+                } else {
+                  return const Scaffold(body: Center(child: CircularProgressIndicator()));
+                }
+              },
+              listener: (context, state) {
+                if (state is Authenticated) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.green,
+                  ));
+                }
+                if (state is RegistrationSuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.green,
+                  ));
+                }
+                if (state is AuthFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(state.message),
+                    backgroundColor: Colors.redAccent,
+                  ));
+                }
+              },
+            ),
           ),
         ),
       ),

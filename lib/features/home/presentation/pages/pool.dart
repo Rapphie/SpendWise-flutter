@@ -29,11 +29,7 @@ class _PoolPageState extends State<PoolPage> {
         backgroundColor: Colors.green,
       ),
     );
-    Navigator.pop(context);
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const AuthPage()),
-    );
+    
   }
 
   @override
